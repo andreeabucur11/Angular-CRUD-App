@@ -1,7 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
 import User from '../User';
+import { UsersService } from '../users.service';
 
 @Component({
 	selector: 'app-users',
@@ -10,36 +10,25 @@ import User from '../User';
 })
 export class UsersComponent implements OnInit {
 
-	public users: User[] = [{
-		id: 1,
-		firstName: "Ana",
-		lastName: "Popa",
-		email: "ana.popa@bearingpoint.com",
-		username: "ana.popa"
-	},
-	{
-		id: 2,
-		firstName: "Andreea",
-		lastName: "Bucur",
-		email: "andreea.bucur@bearingpoint.com",
-		username: "andreea.bucur"
-	}
-	];
-
+	public users: User[] = [];
 
 	public openEditForm: boolean = false;
 
 	public userToEdit: User = new User();
 
-	private idCounter: number = 3;
-
 	public selectedUsers: User[] = [];
 
-	public openConfirmDeleteDialog = false;
+	public isOpenConfirmDeleteSelectedUsersDialog: boolean = false;
 
-	public openForm: boolean = false;
+	public isOpenConfirmDeleteUserDialog: boolean = false;
+
+	public isFormOpen: boolean = false;
 
 	public columns: any[] = [];
+
+	public formType: "Add" | 'Edit' | '' =  '';
+
+	public userToDelete: User = new User();
 
 	public userForm: FormGroup = this.formBuilder.group({
 		firstName: ['', [Validators.required, Validators.minLength(4)]],
@@ -50,22 +39,12 @@ export class UsersComponent implements OnInit {
 
 	constructor(
 		private formBuilder: FormBuilder,
-		private readonly router: Router
-	) {		console.log(this.users);
-	}
+		private userService: UsersService
+	) {	}
 
-	selectUser(user: User) {
-		console.log(this.selectedUsers);
-		this.selectedUsers.push(user);
-	}
-
-	openAddForm() {
-		console.log(this.selectedUsers)
-		this.openForm = true;
-	}
-
+	
 	ngOnInit(): void {
-		console.log(this.users);
+		this.users = this.userService.users;		
 		this.columns = [
 			{ field: 'id', header: 'Id', width: '3%' },
 			{ field: 'firstName', header: 'First name', width: '16%' },
@@ -73,75 +52,71 @@ export class UsersComponent implements OnInit {
 			{ field: 'username', header: 'Username', width: '20%' },
 			{ field: 'email', header: 'Email', width: '23%' },
 			{ field: 'actions', header: 'Actions', width: '20%' },
-
 		];
 	}
-
-
-	openDeleteDialog() {
-		this.openConfirmDeleteDialog = true;
+	
+	openForm(type: 'Add' | 'Edit', userId?: number){
+		this.formType = type;
+		this.isFormOpen = true;
+		if(type == 'Edit' && userId != undefined){
+			this.userToEdit = this.userService.findUserById(userId);
+		}
+		this.userForm.reset();
+	}
+	
+	openDeleteSelectedUsersDialog() {
+		this.isOpenConfirmDeleteSelectedUsersDialog = true;
 	}
 
-	deleteUser(event: User) {
-		console.log(event);
-		this.users.splice(this.users.indexOf(event), 1);
+	openDeleteUserDialog(user: User){
+		this.userToDelete = user;
+		this.isOpenConfirmDeleteUserDialog = true;
 	}
-
+	
 	addUser() {
 		if(this.userForm.invalid){
 			return;
 		}
-		if (this.userForm.value.firstName.trim() && this.userForm.value.lastName.trim() && this.userForm.value.email.trim()) {
-			const user: User = {
-				id: this.idCounter,
-				firstName: this.userForm.value.firstName,
-				lastName: this.userForm.value.lastName,
-				email: this.userForm.value.email,
-				username: this.userForm.value.email.split('@')[0]
-			}
-			this.users.push(user);
-			this.openForm = false;
-			this.idCounter++;
-
-		}
+		const user: User = this.fromFormToUser(this.userForm);
+		this.userService.addUser(user);		
 		this.userForm.reset();
 	}
-
-	deleteNames() {
-		this.openConfirmDeleteDialog = false;
-		console.log(this.selectedUsers);
-		for (let user of this.selectedUsers) {
-			this.deleteUser(user);
-		}
-		this.selectedUsers = [];
-	}
-
-	openEditDialog(user: User) {
-		console.log(this.selectedUsers)
-		this.openEditForm = true;
-		this.userToEdit = user;
-	}
-
+	
 	editUser(firstName: string, lastName: string, email: string) {
-		this.userToEdit.firstName = firstName;
-		this.userToEdit.lastName = lastName;
-		this.userToEdit.email = email;
-		this.userToEdit.username = email.split('@')[0];
-		this.openEditForm = false;
+		this.userService.editUser(this.userToEdit.id, firstName, lastName, email);
 	}
-
-	viewUser(user: User) {
-		this.router.navigate(['/user', user.id])
 		
+	deleteUser(user: User) {
+		this.userService.deleteUser(user);
+		this.isOpenConfirmDeleteUserDialog = false;
+	}
+	
+	deleteUsers() {
+		this.userService.deleteUsers(this.selectedUsers);
+		this.selectedUsers = [];
+		this.userToDelete = new User();
+		this.isOpenConfirmDeleteSelectedUsersDialog = false;
 	}
 
-	findUserById(userId: number) {
-		for (let user of this.users) {
-			if (user.id == userId) {
-				return user;
-			}
+	public fromFormToUser(userForm: FormGroup): User{
+		const user: User = {
+			id: 0,
+			firstName: this.userForm.value.firstName,
+			lastName: this.userForm.value.lastName,
+			email: this.userForm.value.email,
+			username: this.userForm.value.email.split('@')[0]
 		}
-		return undefined;
+		return user;
+	}
+
+	submitForm(){
+		if(this.formType == 'Add'){
+			this.addUser();
+		}
+		else{
+			this.editUser(this.userForm.value.firstName, this.userForm.value.lastName, this.userForm.value.email);
+		}
+		this.isFormOpen = false;
 	}
 
 }

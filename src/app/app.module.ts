@@ -14,7 +14,6 @@ import { TableModule } from 'primeng/table';
 import { UserComponent } from './user/user.component';
 import { RouterModule } from '@angular/router';
 import { UsersComponent } from './users/users.component';
-
 @NgModule({
 	declarations: [
 		AppComponent,
