@@ -1,0 +1,63 @@
+<router-outlet></router-outlet>
+<button pButton type="button" label="Add new user" class="p-button-success" (click)="openAddForm()"></button>
+
+<button *ngIf="selectedUsers.length" pButton pRipple type="button" label="Delete all" class="p-button-danger"
+	(click)="openDeleteDialog()"></button>
+
+<p-table [columns]="columns" [value]="users" selectionMode="checkbox" [(selection)]="selectedUsers">
+	<ng-template pTemplate="header">
+		<tr>
+			<th style="width: 2%">
+				<p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+			</th>
+			<th *ngFor="let column of columns" [ngStyle]="{'width': column.width}">
+				{{column.header}}
+			</th>
+		</tr>
+	</ng-template>
+	<ng-template pTemplate="body" let-user>
+		<tr>
+			<td>
+				<p-tableCheckbox [value]="user" ></p-tableCheckbox>
+			</td>
+			<td>{{user.id}}</td>
+			<td>{{user.firstName}}</td>
+			<td> {{user.lastName}}</td>
+			<td>{{user.username}}</td>
+			<td>{{user.email}}</td>
+			<td><button pButton pRipple type="button" icon="pi pi-user-edit" class="p-button-raised p-button-text"
+					(click)="openEditDialog(user)"></button>
+				<button pButton pRipple type="button" icon="pi pi-trash" class="p-button-danger"
+					(click)="deleteUser(user)"></button>
+				<button pButton pRipple type="button" icon="pi pi-eye" class="p-button-danger"
+					[routerLink]="['/user', user.id]"></button>
+			</td>
+		</tr>
+	</ng-template>
+</p-table>
+
+<p-dialog header="Edit name" [(visible)]="openEditForm">
+	<input type="text" pInputText value={{userToEdit.firstName}} #newFirstName /><br /><br />
+	<input type="text" pInputText value={{userToEdit.lastName}} #newLastName /><br /><br />
+	<input type="text" pInputText value={{userToEdit.email}} #newEmail /><br /><br />
+	<button pButton pRipple type="button" label="Save" class="p-button-raised p-button-text"
+		(click)="editUser(newFirstName.value, newLastName.value, newEmail.value)"></button>
+</p-dialog>
+
+
+<p-dialog header="Confirm " [(visible)]="openConfirmDeleteDialog">
+	<button pButton pRipple type="button" label="Ok" class="p-button-raised p-button-text"
+		(click)="deleteNames()"></button>
+</p-dialog>
+
+<p-dialog header="Add user " [(visible)]="openForm">
+	<form [formGroup]="userForm" (ngSubmit)="addUser()">
+		<input type="text" placeholder="First name" id="firstName" formControlName="firstName" />
+		<br /><br />
+		<input type="text" placeholder="Last name" id="lastName" formControlName="lastName" />
+		<br /><br />
+		<input type="text" placeholder="Email" id="email" formControlName="email" />
+		<br /><br />
+		<button pButton pRipple type="submit" label="Add" class="p-button-raised p-button-text"></button>
+	</form>
+</p-dialog>
