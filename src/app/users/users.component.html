@@ -25,7 +25,8 @@
 			<td> {{user.lastName}}</td>
 			<td>{{user.username}}</td>
 			<td>{{user.email}}</td>
-			<td><button pButton pRipple type="button" icon="pi pi-user-edit" class="p-button-raised p-button-text"
+			<td>
+				<button pButton pRipple type="button" icon="pi pi-user-edit" class="p-button-raised p-button-text"
 					(click)="openForm('Edit', user.id)"></button>
 				<button pButton pRipple type="button" icon="pi pi-trash" class="p-button-danger"
 					(click)="openDeleteUserDialog(user)"></button>
@@ -42,20 +43,20 @@
 </p-dialog>
 
 <p-dialog header="Confirm " [(visible)]="isOpenConfirmDeleteUserDialog">
-	Confirm you want to delete user {{this.userToDelete.email}}
+	Confirm you want to delete user {{userToDelete.email}}
 	<br/><br/>
 	<button pButton pRipple type="button" label="Ok" class="p-button-raised p-button-text"
-		(click)="deleteUser(userToDelete)"></button>
+		(click)="deleteUser(userToDelete.id)"></button>
 </p-dialog>
 
 <p-dialog header="{{formType}} user " [(visible)]="isFormOpen">
 	<form [formGroup]="userForm" (ngSubmit)="submitForm()">
-		<input type="text" value={{userToEdit.firstName}} placeholder="First name" id="firstName" formControlName="firstName" />
+		<input type="text" value="{{userToEdit?.firstName}}" placeholder="First name" id="firstName" formControlName="firstName" />
 		<br /><br />
-		<input type="text" value={{userToEdit.lastName}} placeholder="Last name" id="lastName" formControlName="lastName" />
+		<input type="text" value="{{userToEdit?.lastName}}" placeholder="Last name" id="lastName" formControlName="lastName" />
 		<br /><br />
-		<input type="text" value={{userToEdit.email}} placeholder="Email" id="email" formControlName="email" />
+		<input type="text" value="{{userToEdit?.email}}" placeholder="Email" id="email" formControlName="email" />
 		<br /><br />
-		<button pButton pRipple type="submit" label="Add" class="p-button-raised p-button-text"></button>
+		<button pButton pRipple type="submit" label="Save" class="p-button-raised p-button-text"></button>
 	</form>
 </p-dialog>

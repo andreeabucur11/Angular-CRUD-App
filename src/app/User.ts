@@ -1,9 +1,8 @@
-
-export default class User{
-  id!: number;
-  firstName!: string;
-  lastName!: string;
-  email!: string;
-  username!: string;
+export class User{
+  public id!: number;
+  public firstName!: string;
+  public lastName!: string;
+  public email!: string;
+  public username!: string;
 }
  

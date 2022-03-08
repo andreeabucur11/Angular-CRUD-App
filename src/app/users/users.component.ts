@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import User from '../User';
+import{ User} from '../user';
 import { UsersService } from '../users.service';
 
 @Component({
@@ -14,7 +14,7 @@ export class UsersComponent implements OnInit {
 
 	public openEditForm: boolean = false;
 
-	public userToEdit: User = new User();
+	public userToEdit: User | undefined = new User();
 
 	public selectedUsers: User[] = [];
 
@@ -26,15 +26,14 @@ export class UsersComponent implements OnInit {
 
 	public columns: any[] = [];
 
-	public formType: "Add" | 'Edit' | '' =  '';
+	public formType: "Add" | "Edit" = "Add";
 
 	public userToDelete: User = new User();
 
 	public userForm: FormGroup = this.formBuilder.group({
 		firstName: ['', [Validators.required, Validators.minLength(4)]],
 		lastName: ['', [Validators.required, Validators.minLength(4)]],
-		email: ['', Validators.email],
-		username: ''
+		email: ['', Validators.email]
 	})
 
 	constructor(
@@ -55,10 +54,10 @@ export class UsersComponent implements OnInit {
 		];
 	}
 	
-	openForm(type: 'Add' | 'Edit', userId?: number){
+	openForm(type: "Add" | "Edit", userId?: number){
 		this.formType = type;
 		this.isFormOpen = true;
-		if(type == 'Edit' && userId != undefined){
+		if(type == "Edit" && userId){
 			this.userToEdit = this.userService.findUserById(userId);
 		}
 		this.userForm.reset();
@@ -82,17 +81,20 @@ export class UsersComponent implements OnInit {
 		this.userForm.reset();
 	}
 	
-	editUser(firstName: string, lastName: string, email: string) {
-		this.userService.editUser(this.userToEdit.id, firstName, lastName, email);
+	editUser() {		
+
+		if(this.userToEdit){
+			this.userService.editUser(this.userToEdit.id, this.userForm.value);
+		}
 	}
 		
-	deleteUser(user: User) {
-		this.userService.deleteUser(user);
+	deleteUser(userId: number) {
+		this.userService.deleteUser(userId);
 		this.isOpenConfirmDeleteUserDialog = false;
 	}
 	
 	deleteUsers() {
-		this.userService.deleteUsers(this.selectedUsers);
+		this.userService.deleteUsers(this.selectedUsers.map((user: User) => user.id));
 		this.selectedUsers = [];
 		this.userToDelete = new User();
 		this.isOpenConfirmDeleteSelectedUsersDialog = false;
@@ -110,11 +112,11 @@ export class UsersComponent implements OnInit {
 	}
 
 	submitForm(){
-		if(this.formType == 'Add'){
+		if(this.formType === 'Add'){
 			this.addUser();
 		}
 		else{
-			this.editUser(this.userForm.value.firstName, this.userForm.value.lastName, this.userForm.value.email);
+			this.editUser();
 		}
 		this.isFormOpen = false;
 	}

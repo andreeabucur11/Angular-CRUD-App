@@ -1,8 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
-import User from './User';
-import { FormBuilder } from '@angular/forms';
-import { Router } from '@angular/router';
-
+import { Component} from '@angular/core';
 @Component({
 	selector: 'app-root',
 	templateUrl: './app.component.html',
@@ -10,6 +6,5 @@ import { Router } from '@angular/router';
 })
 export class AppComponent {
 	title = 'tasks';
-
 
 }

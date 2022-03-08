@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import User from './User';
+import {User} from './user';
 
 @Injectable({
 	providedIn: 'root'
@@ -39,36 +39,36 @@ export class UsersService {
 		this.idCounter++;
 	}
 
-	public findUserById(id: number): User {
-		for (let user of this.users) {
-			if (user.id == id) {
-				return user;
-			}
-		}
-		return new User();
+	public findUserById(id: number): User | undefined {
+		return this.users.find(
+			(user: User) => user.id === id
+		);
 	}
 
-	public editUser(id: number, firstName: string, lastName: string, email: string): void {
-		const userToEdit: User | null = this.findUserById(id);
+	public editUser(id: number, userForm: {firstName: string, lastName: string, email: string}): void {
+		const userToEdit: User | undefined = this.findUserById(id);
 		if (!userToEdit) {
 			return;
 		}
 		if (userToEdit) {
-			userToEdit.firstName = firstName;
-			userToEdit.lastName = lastName;
-			userToEdit.email = email;
-			userToEdit.username = email.split('@')[0];
+			userToEdit.firstName = userForm.firstName;
+			userToEdit.lastName = userForm.lastName;
+			userToEdit.email = userForm.email;
+			userToEdit.username = userForm.email.split('@')[0];
 		}
 	}
 
-	public deleteUsers(selectedUsers: User[]): void {
-		for (let user of selectedUsers) {
-			this.deleteUser(user);
+	public deleteUsers(selectedUsersIds: number[]): void {
+		for (let userId of selectedUsersIds) {
+			this.deleteUser(userId);
 		}
 	}
 
-	deleteUser(user: User) {
-		this.users.splice(this.users.indexOf(user), 1);
+	public deleteUser(userId: number) {
+		const user: User | undefined = this.findUserById(userId);
+		if(user){
+			this.users.splice(this.users.indexOf(user), 1);
+		}
 	}
 
 }

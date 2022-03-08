@@ -1,8 +1,6 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
-import User from '../User';
-import { UsersComponent } from '../users/users.component';
-
+import{ User} from '../user';
 @Component({
 	selector: 'app-user',
 	templateUrl: './user.component.html',
@@ -15,23 +13,20 @@ export class UserComponent implements OnInit {
 	constructor(
 		private readonly activatedRoute: ActivatedRoute,
 		private readonly router: Router,
-		
-	) { 		console.log(this.user);
+	) { }
+
+	public ngOnInit(): void {
+		this.getInfoFromUrl();
 	}
 
-	ngOnInit(): void {
+	private getInfoFromUrl(): void{
 		this.activatedRoute.params.subscribe(
 			(params: Params) => {
 				this.user.id = params['userId'];
 			}
 		)
-		console.log(this.user);
-
 	}
 
-	redirectToUsers(){
-		this.router.navigate(['']);
-	}
 
 }
 
