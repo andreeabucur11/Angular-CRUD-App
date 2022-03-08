@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
-import {User} from './user';
+import { User } from './user';
 
 @Injectable({
 	providedIn: 'root'
 })
-export class UsersService {
+export class UserService {
 
 	private _users: User[] = [{
 		id: 1,
@@ -45,7 +45,7 @@ export class UsersService {
 		);
 	}
 
-	public editUser(id: number, userForm: {firstName: string, lastName: string, email: string}): void {
+	public editUser(id: number, userForm: { firstName: string, lastName: string, email: string }): void {
 		const userToEdit: User | undefined = this.findUserById(id);
 		if (!userToEdit) {
 			return;
@@ -64,11 +64,20 @@ export class UsersService {
 		}
 	}
 
-	public deleteUser(userId: number) {
+	public deleteUser(userId: number): void {
 		const user: User | undefined = this.findUserById(userId);
-		if(user){
+		if (user) {
 			this.users.splice(this.users.indexOf(user), 1);
 		}
+	}
+
+	public isEmailAvailable(email: string): boolean {
+		for (let user of this.users) {
+			if (user.email == email) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 }

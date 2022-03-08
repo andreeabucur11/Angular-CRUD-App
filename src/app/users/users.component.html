@@ -1,7 +1,7 @@
 <router-outlet></router-outlet>
 <button pButton type="button" label="Add new user" class="p-button-success" (click)="openForm('Add')"></button>
 
-<button *ngIf="selectedUsers.length" pButton pRipple type="button" label="Delete all" class="p-button-danger"
+<button *ngIf="selectedUsers.length" pButton pRipple type="button" label="Delete selected" class="p-button-danger"
 	(click)="openDeleteSelectedUsersDialog()"></button>
 
 <p-table [columns]="columns" [value]="users" selectionMode="checkbox" [(selection)]="selectedUsers">
@@ -28,10 +28,10 @@
 			<td>
 				<button pButton pRipple type="button" icon="pi pi-user-edit" class="p-button-raised p-button-text"
 					(click)="openForm('Edit', user.id)"></button>
+				<button pButton pRipple type="button" icon="pi pi-eye" class="p-button-raised p-button-text"
+					[routerLink]="['/user', user.id]"></button>
 				<button pButton pRipple type="button" icon="pi pi-trash" class="p-button-danger"
 					(click)="openDeleteUserDialog(user)"></button>
-				<button pButton pRipple type="button" icon="pi pi-eye" class="p-button-danger"
-					[routerLink]="['/user', user.id]"></button>
 			</td>
 		</tr>
 	</ng-template>
@@ -43,19 +43,29 @@
 </p-dialog>
 
 <p-dialog header="Confirm " [(visible)]="isOpenConfirmDeleteUserDialog">
-	Confirm you want to delete user {{userToDelete.email}}
+	Confirm you want to delete user {{userToDelete?.email}}
 	<br/><br/>
 	<button pButton pRipple type="button" label="Ok" class="p-button-raised p-button-text"
-		(click)="deleteUser(userToDelete.id)"></button>
+		(click)="deleteUser()"></button>
 </p-dialog>
 
 <p-dialog header="{{formType}} user " [(visible)]="isFormOpen">
 	<form [formGroup]="userForm" (ngSubmit)="submitForm()">
 		<input type="text" value="{{userToEdit?.firstName}}" placeholder="First name" id="firstName" formControlName="firstName" />
+		<div *ngIf="userForm.controls['firstName'].invalid && (userForm.controls['firstName'].dirty || userForm.controls['firstName'].touched)" class="alert" style="width: 200px; color: red;" >
+            First name must contain at least 3 characters
+		</div>
 		<br /><br />
 		<input type="text" value="{{userToEdit?.lastName}}" placeholder="Last name" id="lastName" formControlName="lastName" />
+		<div *ngIf="userForm.controls['lastName'].invalid && (userForm.controls['lastName'].dirty || userForm.controls['lastName'].touched)" class="alert" style="width: 200px;color: red;">
+            Last name must contain at least 3 characters
+		</div>
 		<br /><br />
 		<input type="text" value="{{userToEdit?.email}}" placeholder="Email" id="email" formControlName="email" />
+		<div *ngIf="userForm.controls['email'].invalid && (userForm.controls['email'].dirty || userForm.controls['email'].touched)" class="alert" style="width: 200px;color: red;">
+            
+			Please enter a valid email address
+		</div>
 		<br /><br />
 		<button pButton pRipple type="submit" label="Save" class="p-button-raised p-button-text"></button>
 	</form>

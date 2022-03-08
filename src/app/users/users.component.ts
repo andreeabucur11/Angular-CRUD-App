@@ -1,7 +1,7 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import{ User} from '../user';
-import { UsersService } from '../users.service';
+import { User } from '../user';
+import { UserService } from '../user.service';
 
 @Component({
 	selector: 'app-users',
@@ -14,7 +14,7 @@ export class UsersComponent implements OnInit {
 
 	public openEditForm: boolean = false;
 
-	public userToEdit: User | undefined = new User();
+	public userToEdit: User | undefined;
 
 	public selectedUsers: User[] = [];
 
@@ -28,22 +28,21 @@ export class UsersComponent implements OnInit {
 
 	public formType: "Add" | "Edit" = "Add";
 
-	public userToDelete: User = new User();
+	public userToDelete: User | undefined;
 
 	public userForm: FormGroup = this.formBuilder.group({
-		firstName: ['', [Validators.required, Validators.minLength(4)]],
-		lastName: ['', [Validators.required, Validators.minLength(4)]],
-		email: ['', Validators.email]
+		firstName: ['', [Validators.required, Validators.minLength(3)]],
+		lastName: ['', [Validators.required, Validators.minLength(3)]],
+		email: ['', [Validators.required, Validators.email]]
 	})
 
 	constructor(
 		private formBuilder: FormBuilder,
-		private userService: UsersService
-	) {	}
+		private userService: UserService
+	) { }
 
-	
-	ngOnInit(): void {
-		this.users = this.userService.users;		
+	public ngOnInit(): void {
+		this.users = this.userService.users;
 		this.columns = [
 			{ field: 'id', header: 'Id', width: '3%' },
 			{ field: 'firstName', header: 'First name', width: '16%' },
@@ -53,54 +52,62 @@ export class UsersComponent implements OnInit {
 			{ field: 'actions', header: 'Actions', width: '20%' },
 		];
 	}
-	
-	openForm(type: "Add" | "Edit", userId?: number){
+
+	public openForm(type: "Add" | "Edit", userId?: number): void {
 		this.formType = type;
 		this.isFormOpen = true;
-		if(type == "Edit" && userId){
+		if (type == "Edit" && userId) {
 			this.userToEdit = this.userService.findUserById(userId);
 		}
-		this.userForm.reset();
+		else{
+			this.userForm.reset();
+		}
 	}
-	
-	openDeleteSelectedUsersDialog() {
+
+	public openDeleteSelectedUsersDialog(): void {
 		this.isOpenConfirmDeleteSelectedUsersDialog = true;
 	}
 
-	openDeleteUserDialog(user: User){
+	public openDeleteUserDialog(user: User): void {
 		this.userToDelete = user;
 		this.isOpenConfirmDeleteUserDialog = true;
 	}
-	
-	addUser() {
-		if(this.userForm.invalid){
+
+	public addUser(): void {
+		if (this.userForm.invalid) {
 			return;
 		}
-		const user: User = this.fromFormToUser(this.userForm);
-		this.userService.addUser(user);		
-		this.userForm.reset();
+		if (this.userService.isEmailAvailable(this.userForm.value.email) == false) {
+			console.log("Email already exists");
+			return;
+		}
+		const user: User = this.fromFormToUser();
+		this.userService.addUser(user);
 	}
-	
-	editUser() {		
 
-		if(this.userToEdit){
+	public editUser(): void {
+
+		console.log(this.userForm.value);
+		
+		if (this.userToEdit) {
 			this.userService.editUser(this.userToEdit.id, this.userForm.value);
 		}
 	}
-		
-	deleteUser(userId: number) {
-		this.userService.deleteUser(userId);
-		this.isOpenConfirmDeleteUserDialog = false;
+
+	public deleteUser(): void {
+		if (this.userToDelete) {
+			this.userService.deleteUser(this.userToDelete.id);
+			this.isOpenConfirmDeleteUserDialog = false;
+		}
 	}
-	
-	deleteUsers() {
+
+	public deleteUsers(): void {
 		this.userService.deleteUsers(this.selectedUsers.map((user: User) => user.id));
 		this.selectedUsers = [];
-		this.userToDelete = new User();
 		this.isOpenConfirmDeleteSelectedUsersDialog = false;
 	}
 
-	public fromFormToUser(userForm: FormGroup): User{
+	public fromFormToUser(): User {
 		const user: User = {
 			id: 0,
 			firstName: this.userForm.value.firstName,
@@ -111,14 +118,13 @@ export class UsersComponent implements OnInit {
 		return user;
 	}
 
-	submitForm(){
-		if(this.formType === 'Add'){
+	public submitForm(): void {
+		if (this.formType === 'Add') {
 			this.addUser();
 		}
-		else{
+		else {
 			this.editUser();
 		}
 		this.isFormOpen = false;
 	}
-
 }
