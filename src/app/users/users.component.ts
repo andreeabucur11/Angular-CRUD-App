@@ -58,6 +58,9 @@ export class UsersComponent implements OnInit {
 		this.isFormOpen = true;
 		if (type == "Edit" && userId) {
 			this.userToEdit = this.userService.findUserById(userId);
+			this.userForm.value.firstName = this.userToEdit?.firstName;
+			this.userForm.value.lastName = this.userToEdit?.lastName;
+			this.userForm.value.email = this.userToEdit?.email;
 		}
 		else{
 			this.userForm.reset();
@@ -77,8 +80,7 @@ export class UsersComponent implements OnInit {
 		if (this.userForm.invalid) {
 			return;
 		}
-		if (this.userService.isEmailAvailable(this.userForm.value.email) == false) {
-			console.log("Email already exists");
+		if (this.userService.isEmailTaken(this.userForm.value.email)) {
 			return;
 		}
 		const user: User = this.fromFormToUser();
@@ -87,11 +89,10 @@ export class UsersComponent implements OnInit {
 
 	public editUser(): void {
 
-		console.log(this.userForm.value);
-		
 		if (this.userToEdit) {
 			this.userService.editUser(this.userToEdit.id, this.userForm.value);
 		}
+		this.userForm.reset();
 	}
 
 	public deleteUser(): void {

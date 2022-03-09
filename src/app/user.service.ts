@@ -51,10 +51,12 @@ export class UserService {
 			return;
 		}
 		if (userToEdit) {
-			userToEdit.firstName = userForm.firstName;
-			userToEdit.lastName = userForm.lastName;
-			userToEdit.email = userForm.email;
-			userToEdit.username = userForm.email.split('@')[0];
+			if(userForm.firstName) userToEdit.firstName = userForm.firstName;
+			if(userForm.lastName) userToEdit.lastName = userForm.lastName;
+			if(userForm.email) {
+				userToEdit.email = userForm.email;
+				userToEdit.username = userForm.email.split('@')[0];
+			}
 		}
 	}
 
@@ -71,13 +73,8 @@ export class UserService {
 		}
 	}
 
-	public isEmailAvailable(email: string): boolean {
-		for (let user of this.users) {
-			if (user.email == email) {
-				return false;
-			}
-		}
-		return true;
+	public isEmailTaken(email: string): boolean {
+		return this.users.some((user: User) => user.email === email);
 	}
 
 }
