@@ -51,21 +51,11 @@
 
 <p-dialog header="{{formType}} user " [(visible)]="isFormOpen">
 	<form [formGroup]="userForm" (ngSubmit)="submitForm()">
-		<input type="text" value="{{userToEdit?.firstName}}" placeholder="First name" id="firstName" formControlName="firstName" />
-		<div *ngIf="userForm.controls['firstName'].invalid && (userForm.controls['firstName'].dirty || userForm.controls['firstName'].touched)" class="alert" >
-            First name must contain at least 3 characters
-		</div>
+		<input type="text" placeholder="First name" id="firstName" formControlName="firstName" />
 		<br /><br />
-		<input type="text" value="{{userToEdit?.lastName}}" placeholder="Last name" id="lastName" formControlName="lastName" />
-		<div *ngIf="userForm.controls['lastName'].invalid && (userForm.controls['lastName'].dirty || userForm.controls['lastName'].touched)" class="alert">
-            Last name must contain at least 3 characters
-		</div>
+		<input type="text"  placeholder="Last name" id="lastName" formControlName="lastName" />
 		<br /><br />
-		<input type="text" value="{{userToEdit?.email}}" placeholder="Email" id="email" formControlName="email" />
-		<div *ngIf="userForm.controls['email'].invalid && (userForm.controls['email'].dirty || userForm.controls['email'].touched)" class="alert">
-            
-			Please enter a valid email address
-		</div>
+		<input type="text"  placeholder="Email" id="email" formControlName="email" />
 		<br /><br />
 		<button pButton pRipple type="submit" label="Save" class="p-button-raised p-button-text"></button>
 	</form>

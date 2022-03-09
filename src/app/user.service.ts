@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { FormControl } from '@angular/forms';
 import { User } from './user';
 
 @Injectable({
@@ -71,10 +72,6 @@ export class UserService {
 		if (user) {
 			this.users.splice(this.users.indexOf(user), 1);
 		}
-	}
-
-	public isEmailTaken(email: string): boolean {
-		return this.users.some((user: User) => user.email === email);
 	}
 
 }

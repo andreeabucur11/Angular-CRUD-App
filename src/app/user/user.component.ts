@@ -12,7 +12,6 @@ export class UserComponent implements OnInit {
 
 	constructor(
 		private readonly activatedRoute: ActivatedRoute,
-		private readonly router: Router,
 	) { }
 
 	public ngOnInit(): void {

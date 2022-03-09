@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { User } from '../user';
 import { UserService } from '../user.service';
 
@@ -31,15 +31,39 @@ export class UsersComponent implements OnInit {
 	public userToDelete: User | undefined;
 
 	public userForm: FormGroup = this.formBuilder.group({
-		firstName: ['', [Validators.required, Validators.minLength(3)]],
-		lastName: ['', [Validators.required, Validators.minLength(3)]],
-		email: ['', [Validators.required, Validators.email]]
+		firstName: '',
+		lastName: '',
+		email:  ''
 	})
 
 	constructor(
 		private formBuilder: FormBuilder,
 		private userService: UserService
 	) { }
+
+	public get firstNameFormControl(): AbstractControl | null {
+		return this.userForm.get('firstName');
+	}
+
+	public get lastNameFormControl(): AbstractControl | null {
+		return this.userForm.get("lastName");
+	}
+
+	public get emailFormControl(): AbstractControl | null {
+		return this.userForm.get("email");
+	}
+	
+	public isEmailTaken(control: FormControl){
+		let email = control.value.email;
+		if(this.users.some((user: User) => user.email === email)) {
+			return {
+				duplicateEmailId: {
+					email: email
+				}
+			}
+		}
+		return null;
+	}
 
 	public ngOnInit(): void {
 		this.users = this.userService.users;
@@ -58,13 +82,36 @@ export class UsersComponent implements OnInit {
 		this.isFormOpen = true;
 		if (type == "Edit" && userId) {
 			this.userToEdit = this.userService.findUserById(userId);
-			this.userForm.value.firstName = this.userToEdit?.firstName;
-			this.userForm.value.lastName = this.userToEdit?.lastName;
-			this.userForm.value.email = this.userToEdit?.email;
+			this.userForm = this.constructFormForEdit();
+			if(this.userToEdit){
+				this.populateForm(this.userToEdit);
+			}
 		}
 		else{
-			this.userForm.reset();
+			this.userForm = this.constructFormForAdd();
 		}
+	}
+	
+	private populateForm(userToEdit: User) : void {
+		this.firstNameFormControl?.setValue(userToEdit.firstName);
+		this.lastNameFormControl?.setValue(userToEdit.lastName);
+		this.emailFormControl?.setValue(userToEdit.email);
+		
+	}
+	private constructFormForEdit(): FormGroup{
+		return this.formBuilder.group({
+			firstName: new FormControl(),
+			lastName: new FormControl(),
+			email: new FormControl()
+		});
+	}
+
+	private constructFormForAdd(): FormGroup {
+		return this.formBuilder.group({
+			firstName: "",
+			lastName: "",
+			email: ["", [Validators.required, Validators.email]],
+		});
 	}
 
 	public openDeleteSelectedUsersDialog(): void {
@@ -77,10 +124,7 @@ export class UsersComponent implements OnInit {
 	}
 
 	public addUser(): void {
-		if (this.userForm.invalid) {
-			return;
-		}
-		if (this.userService.isEmailTaken(this.userForm.value.email)) {
+		if(this.userForm.invalid){
 			return;
 		}
 		const user: User = this.fromFormToUser();
@@ -88,11 +132,9 @@ export class UsersComponent implements OnInit {
 	}
 
 	public editUser(): void {
-
 		if (this.userToEdit) {
 			this.userService.editUser(this.userToEdit.id, this.userForm.value);
 		}
-		this.userForm.reset();
 	}
 
 	public deleteUser(): void {
