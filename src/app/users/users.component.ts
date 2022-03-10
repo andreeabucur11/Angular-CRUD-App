@@ -94,8 +94,11 @@ export class UsersComponent implements OnInit {
 
 	private populateForm(userToEdit: User): void {
 		this.firstNameFormControl?.setValue(userToEdit.firstName);
+		this.firstNameFormControl?.setValidators([Validators.required, Validators.minLength(3)]);
 		this.lastNameFormControl?.setValue(userToEdit.lastName);
+		this.lastNameFormControl?.setValidators([Validators.required, Validators.minLength(3)]);
 		this.emailFormControl?.setValue(userToEdit.email);
+		this.emailFormControl?.setValidators([Validators.required, Validators.email]);
 
 	}
 	private constructFormForEdit(): FormGroup {
