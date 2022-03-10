@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { AbstractControl, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl,  FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { User } from '../user';
 import { UserService } from '../user.service';
+import { EmailValidator } from '../email.validator';
 
 @Component({
 	selector: 'app-users',
@@ -53,17 +54,13 @@ export class UsersComponent implements OnInit {
 		return this.userForm.get("email");
 	}
 
-	public isEmailTaken(control: FormControl) {
-		let email = control.value.email;
-		if (this.users.some((user: User) => user.email === email)) {
-			return {
-				duplicateEmailId: {
-					email: email
-				}
-			}
+	public isEmailTaken(control: FormControl){
+		if(this.userService.isEmailTaken(control.value.email)){
+			return {"duplicateEmail":true};
 		}
 		return null;
 	}
+	
 
 	public ngOnInit(): void {
 		this.users = this.userService.users;
@@ -113,7 +110,11 @@ export class UsersComponent implements OnInit {
 		return this.formBuilder.group({
 			firstName: ["", [Validators.required, Validators.minLength(3)]],
 			lastName: ["", [Validators.required, Validators.minLength(3)]],
-			email: ["", [Validators.required, Validators.email]],
+			email: ["",[
+				Validators.required,
+				Validators.email,
+				EmailValidator.validateEmail(this.userService, {duplicateEmail: true})
+			]]
 		});
 	}
 

@@ -51,14 +51,11 @@ export class UserService {
 		if (!userToEdit) {
 			return;
 		}
-		if (userToEdit) {
-			if(userForm.firstName) userToEdit.firstName = userForm.firstName;
-			if(userForm.lastName) userToEdit.lastName = userForm.lastName;
-			if(userForm.email) {
-				userToEdit.email = userForm.email;
-				userToEdit.username = userForm.email.split('@')[0];
-			}
-		}
+		userToEdit.firstName = userForm.firstName;
+		userToEdit.lastName = userForm.lastName;
+		userToEdit.email = userForm.email;
+		userToEdit.username = userForm.email.split('@')[0];
+
 	}
 
 	public deleteUsers(selectedUsersIds: number[]): void {
@@ -72,6 +69,15 @@ export class UserService {
 		if (user) {
 			this.users.splice(this.users.indexOf(user), 1);
 		}
+	}
+
+	public isEmailTaken(email: string): boolean {
+		console.log(email);
+
+		if (this.users.some((user: User) => user.email === email)) {
+			return true;
+		}
+		return false;
 	}
 
 }

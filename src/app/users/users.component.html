@@ -90,6 +90,9 @@
 			<small class="text-danger" *ngIf="userForm.get('email')?.hasError('email')">
 				Please enter a valid email address.
 			</small>
+			<small class="text-danger" *ngIf="userForm.get('email')?.hasError('duplicateEmail')">
+				Email is already taken
+			</small>
 
 
 		</div>
