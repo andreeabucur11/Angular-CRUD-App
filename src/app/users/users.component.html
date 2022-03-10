@@ -52,45 +52,45 @@
 <p-dialog header="{{formType}} user " [(visible)]="isFormOpen">
 	<form [formGroup]="userForm" (ngSubmit)="submitForm()">
 		<input type="text" placeholder="First name" id="firstName" formControlName="firstName" />
-		<div class="alert" *ngIf="userForm.get('firstName')?.invalid && 
-        userForm.get('firstName')?.errors && 
-        (userForm.get('firstName')?.dirty || userForm.get('firstName')?.touched)">
+		<div class="alert" *ngIf="firstNameFormControl?.invalid && 
+        firstNameFormControl?.errors && 
+        (firstNameFormControl?.dirty || firstNameFormControl?.touched)">
 
-			<small class="text-danger" *ngIf="userForm.get('firstName')?.hasError('required')">
+			<small  *ngIf="firstNameFormControl?.hasError('required')">
 				This field is required.
 			</small>
-			<small class="text-danger" *ngIf="userForm.get('firstName')?.hasError('minlength')">
+			<small  *ngIf="firstNameFormControl?.hasError('minlength')">
 				The minimum length for this field is 3 characters.
 			</small>
 
 		</div>
 		<br /><br />
 		<input type="text" placeholder="Last name" id="lastName" formControlName="lastName" />
-		<div class="alert" *ngIf="userForm.get('lastName')?.invalid && 
-        userForm.get('lastName')?.errors && 
-        (userForm.get('lastName')?.dirty || userForm.get('lastName')?.touched)">
+		<div class="alert" *ngIf="lastNameFormControl?.invalid && 
+        lastNameFormControl?.errors && 
+        (lastNameFormControl?.dirty || lastNameFormControl?.touched)">
 
-			<small class="text-danger" *ngIf="userForm.get('lastName')?.hasError('required')">
+			<small  *ngIf="lastNameFormControl?.hasError('required')">
 				This field is required.
 			</small>
-			<small class="text-danger" *ngIf="userForm.get('lastName')?.hasError('minlength')">
+			<small  *ngIf="lastNameFormControl?.hasError('minlength')">
 				The minimum length for this field is 3 characters.
 			</small>
 
 		</div>
 		<br /><br />
 		<input type="text" placeholder="Email" id="email" formControlName="email" />
-		<div class="alert" *ngIf="userForm.get('email')?.invalid && 
-        userForm.get('email')?.errors && 
-        (userForm.get('email')?.dirty || userForm.get('email')?.touched)">
+		<div class="alert" *ngIf="emailFormControl?.invalid && 
+        emailFormControl?.errors && 
+        (emailFormControl?.dirty || emailFormControl?.touched)">
 
-			<small class="text-danger" *ngIf="userForm.get('email')?.hasError('required')">
+			<small  *ngIf="emailFormControl?.hasError('required')">
 				This field is required.
 			</small>
-			<small class="text-danger" *ngIf="userForm.get('email')?.hasError('email')">
+			<small  *ngIf="emailFormControl?.hasError('email')">
 				Please enter a valid email address.
 			</small>
-			<small class="text-danger" *ngIf="userForm.get('email')?.hasError('duplicateEmail')">
+			<small  *ngIf="emailFormControl?.hasError('duplicateEmail')">
 				Email is already taken
 			</small>
 

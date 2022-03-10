@@ -46,15 +46,15 @@ export class UserService {
 		);
 	}
 
-	public editUser(id: number, userForm: { firstName: string, lastName: string, email: string }): void {
+	public editUser(id: number, userFromForm: User): void {
 		const userToEdit: User | undefined = this.findUserById(id);
 		if (!userToEdit) {
 			return;
 		}
-		userToEdit.firstName = userForm.firstName;
-		userToEdit.lastName = userForm.lastName;
-		userToEdit.email = userForm.email;
-		userToEdit.username = userForm.email.split('@')[0];
+		userToEdit.firstName = userFromForm.firstName;
+		userToEdit.lastName = userFromForm.lastName;
+		userToEdit.email = userFromForm.email;
+		userToEdit.username = userFromForm.email.split('@')[0];
 
 	}
 
@@ -71,9 +71,8 @@ export class UserService {
 		}
 	}
 
+	//To fix this for edit  validator
 	public isEmailTaken(email: string): boolean {
-		console.log(email);
-
 		if (this.users.some((user: User) => user.email === email)) {
 			return true;
 		}

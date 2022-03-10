@@ -77,44 +77,30 @@ export class UsersComponent implements OnInit {
 	public openForm(type: "Add" | "Edit", userId?: number): void {
 		this.formType = type;
 		this.isFormOpen = true;
+		this.userForm = this.constructForm();
 		if (type == "Edit" && userId) {
 			this.userToEdit = this.userService.findUserById(userId);
-			this.userForm = this.constructFormForEdit();
 			if (this.userToEdit) {
 				this.populateForm(this.userToEdit);
 			}
-		}
-		else {
-			this.userForm = this.constructFormForAdd();
 		}
 	}
 
 	private populateForm(userToEdit: User): void {
 		this.firstNameFormControl?.setValue(userToEdit.firstName);
-		this.firstNameFormControl?.setValidators([Validators.required, Validators.minLength(3)]);
 		this.lastNameFormControl?.setValue(userToEdit.lastName);
-		this.lastNameFormControl?.setValidators([Validators.required, Validators.minLength(3)]);
 		this.emailFormControl?.setValue(userToEdit.email);
-		this.emailFormControl?.setValidators([Validators.required, Validators.email]);
-
-	}
-	private constructFormForEdit(): FormGroup {
-		return this.formBuilder.group({
-			firstName: new FormControl(),
-			lastName: new FormControl(),
-			email: new FormControl()
-		});
 	}
 
-	private constructFormForAdd(): FormGroup {
+	private constructForm(): FormGroup {
 		return this.formBuilder.group({
 			firstName: ["", [Validators.required, Validators.minLength(3)]],
 			lastName: ["", [Validators.required, Validators.minLength(3)]],
-			email: ["",[
+			email: ["", Validators.compose([
 				Validators.required,
 				Validators.email,
 				EmailValidator.validateEmail(this.userService, {duplicateEmail: true})
-			]]
+			])]
 		});
 	}
 
@@ -166,12 +152,11 @@ export class UsersComponent implements OnInit {
 	}
 
 	public submitForm(): void {
+		this.isFormOpen = false;
 		if (this.formType === 'Add') {
 			this.addUser();
+			return;
 		}
-		else {
-			this.editUser();
-		}
-		this.isFormOpen = false;
+		this.editUser();
 	}
 }
