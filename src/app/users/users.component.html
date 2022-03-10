@@ -18,7 +18,7 @@
 	<ng-template pTemplate="body" let-user>
 		<tr>
 			<td>
-				<p-tableCheckbox [value]="user" ></p-tableCheckbox>
+				<p-tableCheckbox [value]="user"></p-tableCheckbox>
 			</td>
 			<td>{{user.id}}</td>
 			<td>{{user.firstName}}</td>
@@ -44,7 +44,7 @@
 
 <p-dialog header="Confirm " [(visible)]="isOpenConfirmDeleteUserDialog">
 	Confirm you want to delete user {{userToDelete?.email}}
-	<br/><br/>
+	<br /><br />
 	<button pButton pRipple type="button" label="Ok" class="p-button-raised p-button-text"
 		(click)="deleteUser()"></button>
 </p-dialog>
@@ -52,11 +52,49 @@
 <p-dialog header="{{formType}} user " [(visible)]="isFormOpen">
 	<form [formGroup]="userForm" (ngSubmit)="submitForm()">
 		<input type="text" placeholder="First name" id="firstName" formControlName="firstName" />
+		<div class="alert" *ngIf="userForm.get('firstName')?.invalid && 
+        userForm.get('firstName')?.errors && 
+        (userForm.get('firstName')?.dirty || userForm.get('firstName')?.touched)">
+
+			<small class="text-danger" *ngIf="userForm.get('firstName')?.hasError('required')">
+				This field is required.
+			</small>
+			<small class="text-danger" *ngIf="userForm.get('firstName')?.hasError('minlength')">
+				The minimum length for this field is 3 characters.
+			</small>
+
+		</div>
 		<br /><br />
-		<input type="text"  placeholder="Last name" id="lastName" formControlName="lastName" />
+		<input type="text" placeholder="Last name" id="lastName" formControlName="lastName" />
+		<div class="alert" *ngIf="userForm.get('lastName')?.invalid && 
+        userForm.get('lastName')?.errors && 
+        (userForm.get('lastName')?.dirty || userForm.get('lastName')?.touched)">
+
+			<small class="text-danger" *ngIf="userForm.get('lastName')?.hasError('required')">
+				This field is required.
+			</small>
+			<small class="text-danger" *ngIf="userForm.get('lastName')?.hasError('minlength')">
+				The minimum length for this field is 3 characters.
+			</small>
+
+		</div>
 		<br /><br />
-		<input type="text"  placeholder="Email" id="email" formControlName="email" />
+		<input type="text" placeholder="Email" id="email" formControlName="email" />
+		<div class="alert" *ngIf="userForm.get('email')?.invalid && 
+        userForm.get('email')?.errors && 
+        (userForm.get('email')?.dirty || userForm.get('email')?.touched)">
+
+			<small class="text-danger" *ngIf="userForm.get('email')?.hasError('required')">
+				This field is required.
+			</small>
+			<small class="text-danger" *ngIf="userForm.get('email')?.hasError('email')">
+				Please enter a valid email address.
+			</small>
+
+
+		</div>
 		<br /><br />
-		<button pButton pRipple type="submit" label="Save" class="p-button-raised p-button-text"></button>
+		<button pButton pRipple [disabled]="userForm.invalid" type="submit" label="Save"
+			class="p-button-raised p-button-text"></button>
 	</form>
 </p-dialog>

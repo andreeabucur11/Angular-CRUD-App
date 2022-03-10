@@ -33,7 +33,7 @@ export class UsersComponent implements OnInit {
 	public userForm: FormGroup = this.formBuilder.group({
 		firstName: '',
 		lastName: '',
-		email:  ''
+		email: ''
 	})
 
 	constructor(
@@ -52,10 +52,10 @@ export class UsersComponent implements OnInit {
 	public get emailFormControl(): AbstractControl | null {
 		return this.userForm.get("email");
 	}
-	
-	public isEmailTaken(control: FormControl){
+
+	public isEmailTaken(control: FormControl) {
 		let email = control.value.email;
-		if(this.users.some((user: User) => user.email === email)) {
+		if (this.users.some((user: User) => user.email === email)) {
 			return {
 				duplicateEmailId: {
 					email: email
@@ -83,22 +83,22 @@ export class UsersComponent implements OnInit {
 		if (type == "Edit" && userId) {
 			this.userToEdit = this.userService.findUserById(userId);
 			this.userForm = this.constructFormForEdit();
-			if(this.userToEdit){
+			if (this.userToEdit) {
 				this.populateForm(this.userToEdit);
 			}
 		}
-		else{
+		else {
 			this.userForm = this.constructFormForAdd();
 		}
 	}
-	
-	private populateForm(userToEdit: User) : void {
+
+	private populateForm(userToEdit: User): void {
 		this.firstNameFormControl?.setValue(userToEdit.firstName);
 		this.lastNameFormControl?.setValue(userToEdit.lastName);
 		this.emailFormControl?.setValue(userToEdit.email);
-		
+
 	}
-	private constructFormForEdit(): FormGroup{
+	private constructFormForEdit(): FormGroup {
 		return this.formBuilder.group({
 			firstName: new FormControl(),
 			lastName: new FormControl(),
@@ -108,8 +108,8 @@ export class UsersComponent implements OnInit {
 
 	private constructFormForAdd(): FormGroup {
 		return this.formBuilder.group({
-			firstName: "",
-			lastName: "",
+			firstName: ["", [Validators.required, Validators.minLength(3)]],
+			lastName: ["", [Validators.required, Validators.minLength(3)]],
 			email: ["", [Validators.required, Validators.email]],
 		});
 	}
@@ -124,7 +124,7 @@ export class UsersComponent implements OnInit {
 	}
 
 	public addUser(): void {
-		if(this.userForm.invalid){
+		if (this.userForm.invalid) {
 			return;
 		}
 		const user: User = this.fromFormToUser();
