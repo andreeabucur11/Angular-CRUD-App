@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
-import{ User} from '../user';
+import { User } from '../user';
+import { UserService } from '../user.service';
 @Component({
 	selector: 'app-user',
 	templateUrl: './user.component.html',
@@ -12,18 +13,32 @@ export class UserComponent implements OnInit {
 
 	constructor(
 		private readonly activatedRoute: ActivatedRoute,
-	) { }
-
-	public ngOnInit(): void {
-		this.getInfoFromUrl();
+		private readonly userService: UserService,
+		private readonly router: Router
+	) {
+		this.getUserIdFromUrl();
 	}
 
-	private getInfoFromUrl(): void{
+	public ngOnInit(): void {
+		this.setUser();
+	}
+
+	public getUserIdFromUrl(): void {
 		this.activatedRoute.params.subscribe(
 			(params: Params) => {
-				this.user.id = params['userId'];
+				this.user.id = parseInt(params['userId']);
 			}
 		)
+	}
+
+	public setUser(): void {
+		const user: User | undefined = this.userService.findUserById(this.user.id);
+		if(!user) {
+			this.router.navigate(['']);
+		}
+		if (user) {
+			this.user = user;
+		}
 	}
 }
 
