@@ -1,0 +1,103 @@
+<router-outlet></router-outlet>
+<button pButton type="button" label="Add new user" class="p-button-success" (click)="openForm('Add')"></button>
+
+<button *ngIf="selectedUsers.length" pButton pRipple type="button" label="Delete selected" class="p-button-danger"
+	(click)="openDeleteSelectedUsersDialog()"></button>
+
+<p-table [columns]="columns" [value]="users" selectionMode="checkbox" [(selection)]="selectedUsers">
+	<ng-template pTemplate="header">
+		<tr>
+			<th style="width: 2%">
+				<p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+			</th>
+			<th *ngFor="let column of columns" [ngStyle]="{'width': column.width}">
+				{{column.header}}
+			</th>
+		</tr>
+	</ng-template>
+	<ng-template pTemplate="body" let-user>
+		<tr>
+			<td>
+				<p-tableCheckbox [value]="user"></p-tableCheckbox>
+			</td>
+			<td>{{user.id}}</td>
+			<td>{{user.firstName}}</td>
+			<td> {{user.lastName}}</td>
+			<td>{{user.username}}</td>
+			<td>{{user.email}}</td>
+			<td>
+				<button pButton pRipple type="button" icon="pi pi-user-edit" class="p-button-raised p-button-text"
+					(click)="openForm('Edit', user.id)"></button>
+				<button pButton pRipple type="button" icon="pi pi-eye" class="p-button-raised p-button-text"
+					[routerLink]="['/user', user.id]"></button>
+				<button pButton pRipple type="button" icon="pi pi-trash" class="p-button-danger"
+					(click)="openDeleteUserDialog(user)"></button>
+			</td>
+		</tr>
+	</ng-template>
+</p-table>
+
+<p-dialog header="Confirm " [(visible)]="isOpenConfirmDeleteSelectedUsersDialog">
+	<button pButton pRipple type="button" label="Ok" class="p-button-raised p-button-text"
+		(click)="deleteUsers()"></button>
+</p-dialog>
+
+<p-dialog header="Confirm " [(visible)]="isOpenConfirmDeleteUserDialog">
+	Confirm you want to delete user {{userToDelete?.email}}
+	<br /><br />
+	<button pButton pRipple type="button" label="Ok" class="p-button-raised p-button-text"
+		(click)="deleteUser()"></button>
+</p-dialog>
+
+<p-dialog header="{{formType}} user " [(visible)]="isFormOpen">
+	<form [formGroup]="userForm" (ngSubmit)="submitForm()">
+		<input type="text" placeholder="First name" id="firstName" formControlName="firstName" />
+		<div class="alert" *ngIf="firstNameFormControl?.invalid && 
+        firstNameFormControl?.errors && 
+        (firstNameFormControl?.dirty || firstNameFormControl?.touched)">
+
+			<small *ngIf="firstNameFormControl?.hasError('required')">
+				This field is required.
+			</small>
+			<small *ngIf="firstNameFormControl?.hasError('minlength')">
+				The minimum length for this field is 3 characters.
+			</small>
+
+		</div>
+		<br /><br />
+		<input type="text" placeholder="Last name" id="lastName" formControlName="lastName" />
+		<div class="alert" *ngIf="lastNameFormControl?.invalid && 
+        lastNameFormControl?.errors && 
+        (lastNameFormControl?.dirty || lastNameFormControl?.touched)">
+
+			<small *ngIf="lastNameFormControl?.hasError('required')">
+				This field is required.
+			</small>
+			<small *ngIf="lastNameFormControl?.hasError('minlength')">
+				The minimum length for this field is 3 characters.
+			</small>
+
+		</div>
+		<br /><br />
+		<input type="text" placeholder="Email" id="email" formControlName="email" />
+		<div class="alert" *ngIf="emailFormControl?.invalid && 
+        emailFormControl?.errors && 
+        (emailFormControl?.dirty || emailFormControl?.touched)">
+
+			<small *ngIf="emailFormControl?.hasError('required')">
+				This field is required.
+			</small>
+			<small *ngIf="emailFormControl?.hasError('email')">
+				Please enter a valid email address.
+			</small>
+			<small *ngIf="emailFormControl?.hasError('duplicateEmail')">
+				Email is already taken
+			</small>
+
+
+		</div>
+		<br /><br />
+		<button pButton pRipple [disabled]="userForm.invalid" type="submit" label="Save"
+			class="p-button-raised p-button-text"></button>
+	</form>
+</p-dialog>
