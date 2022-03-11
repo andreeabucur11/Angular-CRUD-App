@@ -56,10 +56,10 @@
         firstNameFormControl?.errors && 
         (firstNameFormControl?.dirty || firstNameFormControl?.touched)">
 
-			<small  *ngIf="firstNameFormControl?.hasError('required')">
+			<small *ngIf="firstNameFormControl?.hasError('required')">
 				This field is required.
 			</small>
-			<small  *ngIf="firstNameFormControl?.hasError('minlength')">
+			<small *ngIf="firstNameFormControl?.hasError('minlength')">
 				The minimum length for this field is 3 characters.
 			</small>
 
@@ -70,10 +70,10 @@
         lastNameFormControl?.errors && 
         (lastNameFormControl?.dirty || lastNameFormControl?.touched)">
 
-			<small  *ngIf="lastNameFormControl?.hasError('required')">
+			<small *ngIf="lastNameFormControl?.hasError('required')">
 				This field is required.
 			</small>
-			<small  *ngIf="lastNameFormControl?.hasError('minlength')">
+			<small *ngIf="lastNameFormControl?.hasError('minlength')">
 				The minimum length for this field is 3 characters.
 			</small>
 
@@ -84,13 +84,13 @@
         emailFormControl?.errors && 
         (emailFormControl?.dirty || emailFormControl?.touched)">
 
-			<small  *ngIf="emailFormControl?.hasError('required')">
+			<small *ngIf="emailFormControl?.hasError('required')">
 				This field is required.
 			</small>
-			<small  *ngIf="emailFormControl?.hasError('email')">
+			<small *ngIf="emailFormControl?.hasError('email')">
 				Please enter a valid email address.
 			</small>
-			<small  *ngIf="emailFormControl?.hasError('duplicateEmail')">
+			<small *ngIf="emailFormControl?.hasError('duplicateEmail')">
 				Email is already taken
 			</small>
 

@@ -54,14 +54,6 @@ export class UsersComponent implements OnInit {
 		return this.userForm.get("email");
 	}
 
-	public isEmailTaken(control: FormControl){
-		if(this.userService.isEmailTaken(control.value.email)){
-			return {"duplicateEmail":true};
-		}
-		return null;
-	}
-	
-
 	public ngOnInit(): void {
 		this.users = this.userService.users;
 		this.columns = [
@@ -83,13 +75,18 @@ export class UsersComponent implements OnInit {
 			if (this.userToEdit) {
 				this.populateForm(this.userToEdit);
 			}
-		}
+		}	
 	}
 
 	private populateForm(userToEdit: User): void {
 		this.firstNameFormControl?.setValue(userToEdit.firstName);
 		this.lastNameFormControl?.setValue(userToEdit.lastName);
 		this.emailFormControl?.setValue(userToEdit.email);
+		this.emailFormControl?.setValidators([
+			Validators.required,
+			Validators.email,
+			EmailValidator.validateEmail(this.userService, {duplicateEmail: true}, userToEdit.email)
+		])
 	}
 
 	private constructForm(): FormGroup {
@@ -124,6 +121,7 @@ export class UsersComponent implements OnInit {
 	public editUser(): void {
 		if (this.userToEdit) {
 			this.userService.editUser(this.userToEdit.id, this.userForm.value);
+			this.userToEdit = undefined;
 		}
 	}
 

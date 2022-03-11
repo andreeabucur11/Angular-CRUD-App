@@ -71,12 +71,9 @@ export class UserService {
 		}
 	}
 
-	//To fix this for edit  validator
-	public isEmailTaken(email: string): boolean {
-		if (this.users.some((user: User) => user.email === email)) {
-			return true;
-		}
-		return false;
+	public isEmailTaken(email: string, currentEmail?: string): boolean {
+		if (email == currentEmail) return false;
+		return this.users.some((user: User) => user.email === email);
 	}
 
 }
