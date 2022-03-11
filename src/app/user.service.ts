@@ -72,7 +72,9 @@ export class UserService {
 	}
 
 	public isEmailTaken(email: string, currentEmail?: string): boolean {
-		if (email == currentEmail) return false;
+		if(email == currentEmail) {
+			return false;
+		}
 		return this.users.some((user: User) => user.email === email);
 	}
 
