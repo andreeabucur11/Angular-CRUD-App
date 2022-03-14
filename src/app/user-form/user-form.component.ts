@@ -15,16 +15,13 @@ export class UserFormComponent implements OnInit, OnChanges {
 	@Input()
 	public formType: "Add" | "Edit" = "Add";
 
-	public isFormOpen: boolean = true;
+	@Input()
+	public userToEdit: User | undefined = undefined;
 
 	@Output()
 	public closeFormEvent: EventEmitter<boolean> = new EventEmitter<boolean>();
 
-	@Output()
-	public updateUserToEditEvent: EventEmitter<any> = new EventEmitter<any>();
-
-	@Input()
-	public userToEdit: User | undefined = undefined;
+	public isFormOpen: boolean = true;
 
 	public userForm: FormGroup = this.formBuilder.group({
 		firstName: ["", [Validators.required, Validators.minLength(3)]],
@@ -112,7 +109,6 @@ export class UserFormComponent implements OnInit, OnChanges {
 		if (this.userToEdit) {
 			this.userService.editUser(this.userToEdit.id, this.userForm.value);
 			this.userToEdit = undefined;
-			this.updateUserToEditEvent.emit(this.userToEdit);
 		}
 	}
 
@@ -135,6 +131,5 @@ export class UserFormComponent implements OnInit, OnChanges {
 		}
 		return user;
 	}
-
 
 }
