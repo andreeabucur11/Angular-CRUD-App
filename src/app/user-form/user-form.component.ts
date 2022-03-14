@@ -132,4 +132,8 @@ export class UserFormComponent implements OnInit, OnChanges {
 		return user;
 	}
 
+	public closeForm(): void {
+		this.closeFormEvent.emit(false);
+	}
+
 }
