@@ -1,9 +1,8 @@
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChange, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { User } from '../user';
 import { UserService } from '../user.service';
 import { EmailValidator } from '../email.validator';
-
 
 @Component({
 	selector: 'app-user-form',
@@ -17,6 +16,9 @@ export class UserFormComponent implements OnInit, OnChanges {
 
 	@Input()
 	public userToEdit: User | undefined = undefined;
+
+	@Output()
+	public submitFormEvent: EventEmitter<{ user: User, formType: "Add" | "Edit" }> = new EventEmitter<{ user: User, formType: "Add" | "Edit" }>();
 
 	@Output()
 	public closeFormEvent: EventEmitter<boolean> = new EventEmitter<boolean>();
@@ -98,23 +100,18 @@ export class UserFormComponent implements OnInit, OnChanges {
 	}
 
 	public addUser(): void {
-		if (this.userForm.invalid) {
-			return;
-		}
 		const user: User = this.fromFormToUser();
-		this.userService.addUser(user);
+		this.submitFormEvent.emit({ user: user, formType: "Add" });
 	}
 
 	public editUser(): void {
 		if (this.userToEdit) {
-			this.userService.editUser(this.userToEdit.id, this.userForm.value);
-			this.userToEdit = undefined;
+			this.submitFormEvent.emit({ user: this.userForm.value, formType: "Edit" })
 		}
 	}
 
 	public submitForm(): void {
-		this.closeFormEvent.emit(false);
-		if (this.formType === 'Add') {
+		if (this.formType === "Add") {
 			this.addUser();
 			return;
 		}

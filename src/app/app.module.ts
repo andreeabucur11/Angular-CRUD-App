@@ -15,12 +15,13 @@ import { UserComponent } from './user/user.component';
 import { RouterModule } from '@angular/router';
 import { UsersComponent } from './users/users.component';
 import { UserFormComponent } from './user-form/user-form.component';
+
 @NgModule({
 	declarations: [
 		AppComponent,
 		UserComponent,
 		UsersComponent,
-  UserFormComponent,
+		UserFormComponent
 	],
 	imports: [
 		BrowserModule,

@@ -29,7 +29,7 @@ export class UsersComponent implements OnInit {
 
 	public userToDelete: User | undefined;
 
-	
+
 	constructor(
 		private userService: UserService
 	) { }
@@ -47,17 +47,17 @@ export class UsersComponent implements OnInit {
 	}
 
 	public openForm(type: "Add" | "Edit", userId?: number): void {
-		
+
 		this.formType = type;
 		this.isFormOpen = true;
 		if (type == "Edit" && userId) {
 			this.userToEdit = this.userService.findUserById(userId);
-		}	
+		}
 		else {
 			this.userToEdit = undefined;
 		}
-		}
-		
+	}
+
 	public openDeleteSelectedUsersDialog(): void {
 		this.isOpenConfirmDeleteSelectedUsersDialog = true;
 	}
@@ -66,26 +66,45 @@ export class UsersComponent implements OnInit {
 		this.userToDelete = user;
 		this.isOpenConfirmDeleteUserDialog = true;
 	}
-	
+
 	public deleteUser(): void {
 		if (this.userToDelete) {
 			this.userService.deleteUser(this.userToDelete.id);
 			this.isOpenConfirmDeleteUserDialog = false;
 		}
 	}
-	
+
 	public deleteUsers(): void {
 		this.userService.deleteUsers(this.selectedUsers.map((user: User) => user.id));
 		this.selectedUsers = [];
 		this.isOpenConfirmDeleteSelectedUsersDialog = false;
 	}
-	
+
 	public closeForm(): void {
 		this.isFormOpen = false;
 	}
 
-	public updateUserToEdit(event: any){
+	public updateUserToEdit(event: any) {
 		this.userToEdit = event;
+	}
+
+	public addUser(user: User): void {
+		this.userService.addUser(user);
+	}
+
+	public editUser(userToEdit: User): void {
+		if (this.userToEdit) {
+			this.userService.editUser(this.userToEdit.id, userToEdit);
+		}
+	}
+
+	public submitForm(event: any): void {
+		this.isFormOpen = false;
+		if (event.formType === "Add") {
+			this.addUser(event.user);
+			return;
+		}
+		this.editUser(event.user);
 	}
 
 }

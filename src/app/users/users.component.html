@@ -49,6 +49,4 @@
 		(click)="deleteUser()"></button>
 </p-dialog>
 
-<ng-container *ngIf="isFormOpen">
-	<app-user-form (closeFormEvent)="closeForm()" (updateUserToEdit)="updateUserToEdit($event)" [formType]="formType" [userToEdit]="userToEdit"></app-user-form>
-</ng-container>
+<app-user-form *ngIf="isFormOpen" [formType]="formType" [userToEdit]="userToEdit" (closeFormEvent)="closeForm()" (updateUserToEdit)="updateUserToEdit($event)" (submitFormEvent)="submitForm($event)"></app-user-form>
