@@ -1,6 +1,6 @@
 
-<p-dialog header="{{formType}} user " [(visible)]="isFormOpen" (onHide)="closeForm()">
-	<form [formGroup]="userForm" (ngSubmit)="submitForm()">
+<p-dialog header="{{formType}} user " [(visible)]="isVisible" (onHide)="handleHide()">
+	<form *ngIf="userForm" [formGroup]="userForm!" (ngSubmit)="handleSubmitForm()">
 		<input type="text" placeholder="First name" id="firstName" formControlName="firstName" />
 		<div class="alert" *ngIf="firstNameFormControl?.invalid && 
         firstNameFormControl?.errors && 
@@ -29,7 +29,11 @@
 
 		</div>
 		<br /><br />
-		<input type="text" placeholder="Email" id="email" formControlName="email" />
+		<input type="text" placeholder="Email" id="email" formControlName="email" (click)="setIsEmailTakenToFalse()" />
+		<small *ngIf="isEmailTaken" class="alert">
+			<br/>
+			Email is already taken
+		</small>
 		<div class="alert" *ngIf="emailFormControl?.invalid && 
         emailFormControl?.errors && 
         (emailFormControl?.dirty || emailFormControl?.touched)">
@@ -40,14 +44,10 @@
 			<small *ngIf="emailFormControl?.hasError('email')">
 				Please enter a valid email address.
 			</small>
-			<small *ngIf="emailFormControl?.hasError('duplicateEmail')">
-				Email is already taken
-			</small>
-
-
+	
 		</div>
 		<br /><br />
-		<button pButton pRipple [disabled]="userForm.invalid" type="submit" label="Save"
+		<button pButton pRipple [disabled]="userForm.invalid || this.isEmailTaken" type="submit" label="Save"
 			class="p-button-raised p-button-text"></button>
 	</form>
 </p-dialog>

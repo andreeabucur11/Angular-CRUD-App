@@ -29,13 +29,15 @@ export class UsersComponent implements OnInit {
 
 	public userToDelete: User | undefined;
 
+	public isEmailTaken: boolean = false;
 
 	constructor(
 		private userService: UserService
-	) { }
+	) { 
+		this.users = this.userService.getUsers();
+	}
 
 	public ngOnInit(): void {
-		this.users = this.userService.users;
 		this.columns = [
 			{ field: 'id', header: 'Id', width: '3%' },
 			{ field: 'firstName', header: 'First name', width: '16%' },
@@ -47,7 +49,7 @@ export class UsersComponent implements OnInit {
 	}
 
 	public openForm(type: "Add" | "Edit", userId?: number): void {
-
+		this.isEmailTaken = false;
 		this.formType = type;
 		this.isFormOpen = true;
 		if (type == "Edit" && userId) {
@@ -71,6 +73,7 @@ export class UsersComponent implements OnInit {
 		if (this.userToDelete) {
 			this.userService.deleteUser(this.userToDelete.id);
 			this.isOpenConfirmDeleteUserDialog = false;
+			this.users = this.userService.getUsers();
 		}
 	}
 
@@ -78,33 +81,39 @@ export class UsersComponent implements OnInit {
 		this.userService.deleteUsers(this.selectedUsers.map((user: User) => user.id));
 		this.selectedUsers = [];
 		this.isOpenConfirmDeleteSelectedUsersDialog = false;
+		this.users = this.userService.getUsers();
 	}
 
 	public closeForm(): void {
 		this.isFormOpen = false;
 	}
 
-	public updateUserToEdit(event: any) {
-		this.userToEdit = event;
-	}
-
 	public addUser(user: User): void {
 		this.userService.addUser(user);
+		this.users = this.userService.getUsers();
 	}
 
 	public editUser(userToEdit: User): void {
-		if (this.userToEdit) {
+		if(this.userToEdit){
 			this.userService.editUser(this.userToEdit.id, userToEdit);
 		}
+		this.users = this.userService.getUsers();
 	}
 
 	public submitForm(event: any): void {
+		if(this.userService.isEmailTaken(event.user.email, this.userToEdit?.email)){
+			this.isEmailTaken = true;
+			return;
+		}		
 		this.isFormOpen = false;
 		if (event.formType === "Add") {
 			this.addUser(event.user);
 			return;
 		}
 		this.editUser(event.user);
+		
 	}
-
+	updateIsEmailTaken(event: boolean){
+		this.isEmailTaken = event;
+	}
 }

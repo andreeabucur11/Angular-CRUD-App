@@ -1,15 +1,12 @@
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { User } from '../user';
-import { UserService } from '../user.service';
-import { EmailValidator } from '../email.validator';
-
 @Component({
 	selector: 'app-user-form',
 	templateUrl: './user-form.component.html',
 	styleUrls: ['./user-form.component.css']
 })
-export class UserFormComponent implements OnInit, OnChanges {
+export class UserFormComponent implements OnInit{
 
 	@Input()
 	public formType: "Add" | "Edit" = "Add";
@@ -17,100 +14,73 @@ export class UserFormComponent implements OnInit, OnChanges {
 	@Input()
 	public userToEdit: User | undefined = undefined;
 
-	@Output()
-	public submitFormEvent: EventEmitter<{ user: User, formType: "Add" | "Edit" }> = new EventEmitter<{ user: User, formType: "Add" | "Edit" }>();
+	@Input()
+	public isEmailTaken: boolean = false;
 
 	@Output()
-	public closeFormEvent: EventEmitter<boolean> = new EventEmitter<boolean>();
+	public onSubmit = new EventEmitter<{ user: User, formType: "Add" | "Edit" }>();
 
-	public isFormOpen: boolean = true;
+	@Output()
+	public onClose = new EventEmitter<void>();
 
-	public userForm: FormGroup = this.formBuilder.group({
+	@Output()
+	public onUpdateIsEmailTaken = new EventEmitter<boolean>();
+
+	public isVisible: boolean = true;
+
+	userForm = this.formBuilder.group({
 		firstName: ["", [Validators.required, Validators.minLength(3)]],
 		lastName: ["", [Validators.required, Validators.minLength(3)]],
-		email: ["", Validators.compose([
+		email: ["", [
 			Validators.required,
 			Validators.email,
-			EmailValidator.validateEmail(this.userService, { duplicateEmail: true })
-		])]
-	})
+		]]
+	});
 
 	constructor(
-		private formBuilder: FormBuilder,
-		private userService: UserService
-	) {
-		this.userForm = this.constructForm();
+		private formBuilder: FormBuilder
+	) { 
 	}
 
-	ngOnChanges(changes: SimpleChanges): void {
-		if (changes['formType']) {
-			this.formType = changes['formType'].currentValue;
-		}
-		this.userToEdit = changes['userToEdit'].currentValue;
-		this.userForm = this.constructForm();
-
-		if (this.formType == "Edit") {
-			if (this.userToEdit) {
-				this.populateForm(this.userToEdit);
-			}
-		}
-	}
-
-	ngOnInit(): void {
+	public ngOnInit(): void {
+		this.userForm.reset();
 		if (this.formType === "Edit") {
 			if (this.userToEdit) {
-				this.populateForm(this.userToEdit);
+				this.populateForm();
 			}
 		}
 	}
 
 	public get firstNameFormControl(): AbstractControl | null {
-		return this.userForm.get('firstName');
+		return this.userForm!.get('firstName');
 	}
 
 	public get lastNameFormControl(): AbstractControl | null {
-		return this.userForm.get("lastName");
+		return this.userForm!.get("lastName");
 	}
 
 	public get emailFormControl(): AbstractControl | null {
-		return this.userForm.get("email");
+		return this.userForm!.get("email");
 	}
 
-	private constructForm(): FormGroup {
-		return this.formBuilder.group({
-			firstName: ["", [Validators.required, Validators.minLength(3)]],
-			lastName: ["", [Validators.required, Validators.minLength(3)]],
-			email: ["", Validators.compose([
-				Validators.required,
-				Validators.email,
-				EmailValidator.validateEmail(this.userService, { duplicateEmail: true })
-			])]
-		});
-	}
-
-	private populateForm(userToEdit: User): void {
-		this.firstNameFormControl?.setValue(userToEdit.firstName);
-		this.lastNameFormControl?.setValue(userToEdit.lastName);
-		this.emailFormControl?.setValue(userToEdit.email);
-		this.emailFormControl?.setValidators([
-			Validators.required,
-			Validators.email,
-			EmailValidator.validateEmail(this.userService, { duplicateEmail: true }, userToEdit.email)
-		])
+	private populateForm(): void {
+		this.firstNameFormControl?.setValue(this.userToEdit?.firstName);
+		this.lastNameFormControl?.setValue(this.userToEdit?.lastName);
+		this.emailFormControl?.setValue(this.userToEdit?.email);
 	}
 
 	public addUser(): void {
 		const user: User = this.fromFormToUser();
-		this.submitFormEvent.emit({ user: user, formType: "Add" });
+		this.onSubmit.emit({ user: user, formType: "Add" });
 	}
 
 	public editUser(): void {
 		if (this.userToEdit) {
-			this.submitFormEvent.emit({ user: this.userForm.value, formType: "Edit" })
+			this.onSubmit.emit({ user: this.userForm?.value, formType: "Edit" })
 		}
 	}
 
-	public submitForm(): void {
+	public handleSubmitForm(): void {
 		if (this.formType === "Add") {
 			this.addUser();
 			return;
@@ -118,19 +88,23 @@ export class UserFormComponent implements OnInit, OnChanges {
 		this.editUser();
 	}
 
+	setIsEmailTakenToFalse(){
+		this.isEmailTaken = false;
+		this.onUpdateIsEmailTaken.emit(false);
+	}
 	public fromFormToUser(): User {
 		const user: User = {
 			id: 0,
-			firstName: this.userForm.value.firstName,
-			lastName: this.userForm.value.lastName,
-			email: this.userForm.value.email,
-			username: this.userForm.value.email.split('@')[0]
+			firstName: this.userForm?.value.firstName,
+			lastName: this.userForm?.value.lastName,
+			email: this.userForm?.value.email,
+			username: this.userForm?.value.email.split('@')[0]
 		}
 		return user;
 	}
 
-	public closeForm(): void {
-		this.closeFormEvent.emit(false);
+	public handleHide(): void {
+		this.onClose.emit();
 	}
 
 }

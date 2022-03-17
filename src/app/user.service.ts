@@ -7,7 +7,7 @@ import { User } from './user';
 })
 export class UserService {
 
-	private _users: User[] = [{
+	private users: User[] = [{
 		id: 1,
 		firstName: "Ana",
 		lastName: "Popa",
@@ -26,22 +26,21 @@ export class UserService {
 
 	constructor() { }
 
-	public get users(): User[] {
-		return this._users;
-	}
-
-	public set users(users: User[]) {
-		this._users = users;
+	public getUsers(): User[] {
+		const users = [...this.users];
+		return users;
 	}
 
 	public addUser(user: User): void {
 		user.id = this.idCounter;
-		this._users.push(user);
+		this.users.push(user);
 		this.idCounter++;
+		console.log(this.getUsers());
+		
 	}
 
 	public findUserById(id: number): User | undefined {
-		return this.users.find(
+		return this.getUsers().find(
 			(user: User) => user.id === id
 		);
 	}
@@ -55,7 +54,7 @@ export class UserService {
 		userToEdit.lastName = userFromForm.lastName;
 		userToEdit.email = userFromForm.email;
 		userToEdit.username = userFromForm.email.split('@')[0];
-
+		
 	}
 
 	public deleteUsers(selectedUsersIds: number[]): void {
@@ -67,15 +66,19 @@ export class UserService {
 	public deleteUser(userId: number): void {
 		const user: User | undefined = this.findUserById(userId);
 		if (user) {
-			this.users.splice(this.users.indexOf(user), 1);
+			this.users.splice(this.getUsers().indexOf(user), 1);
+			console.log(user);
+			
 		}
+		console.log(this.getUsers());
+		
 	}
 
 	public isEmailTaken(email: string, currentEmail?: string): boolean {
 		if(email === currentEmail) {
 			return false;
 		}
-		return this.users.some((user: User) => user.email === email);
+		return this.getUsers().some((user: User) => user.email === email);
 	}
 
 }
