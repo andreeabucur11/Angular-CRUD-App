@@ -33,8 +33,16 @@ export class UsersComponent implements OnInit {
 
 	constructor(
 		private userService: UserService
-	) { 
-		this.users = this.userService.getUsers();
+	) {
+		this.prepareUsers();
+	}
+
+	public prepareUsers() {
+		this.userService.getUsers().subscribe(
+			(data) => {
+				this.users = data;
+			}
+		)
 	}
 
 	public ngOnInit(): void {
@@ -48,16 +56,18 @@ export class UsersComponent implements OnInit {
 		];
 	}
 
-	public openForm(type: "Add" | "Edit", userId?: number): void {
+	public async openForm(type: "Add" | "Edit", userId?: number): Promise<void> {
 		this.isEmailTaken = false;
 		this.formType = type;
-		this.isFormOpen = true;
 		if (type == "Edit" && userId) {
-			this.userToEdit = this.userService.findUserById(userId);
+			this.userToEdit = await this.userService.findUserById(userId);
+			console.log(this.userToEdit);
 		}
 		else {
 			this.userToEdit = undefined;
 		}
+		this.isFormOpen = true;
+
 	}
 
 	public openDeleteSelectedUsersDialog(): void {
@@ -69,51 +79,75 @@ export class UsersComponent implements OnInit {
 		this.isOpenConfirmDeleteUserDialog = true;
 	}
 
-	public deleteUser(): void {
+	public async deleteUser(): Promise<void> {
 		if (this.userToDelete) {
-			this.userService.deleteUser(this.userToDelete.id);
+			const user: User | undefined = await this.userService.findUserById(this.userToDelete!.id);
+			this.selectedUsers = [];
+			this.userService.deleteUser(this.userToDelete.id)
+				.subscribe(
+					() => {
+						if (user) {
+							this.users.splice(this.users.indexOf(user), 1);
+						}
+					}
+				);
 			this.isOpenConfirmDeleteUserDialog = false;
-			this.users = this.userService.getUsers();
 		}
 	}
 
 	public deleteUsers(): void {
-		this.userService.deleteUsers(this.selectedUsers.map((user: User) => user.id));
+		for (let user of this.selectedUsers) {
+			this.userService.deleteUser(user.id)
+				.subscribe(
+					() => {
+						this.users.splice(this.users.indexOf(user), 1);
+					}
+				)
+		}
 		this.selectedUsers = [];
 		this.isOpenConfirmDeleteSelectedUsersDialog = false;
-		this.users = this.userService.getUsers();
 	}
 
 	public closeForm(): void {
 		this.isFormOpen = false;
 	}
 
-	public addUser(user: User): void {
-		this.userService.addUser(user);
-		this.users = this.userService.getUsers();
+	public async addUser(user: User): Promise<void> {
+		const newUser = await this.userService.addUser(user);
+		if (newUser) {
+			this.users.push(newUser);
+		}
 	}
 
 	public editUser(userToEdit: User): void {
-		if(this.userToEdit){
-			this.userService.editUser(this.userToEdit.id, userToEdit);
+		if (this.userToEdit) {
+			const index = this.users.indexOf(userToEdit);
+			this.userService.editUser(this.userToEdit.id, userToEdit)
+				.subscribe(
+					() => {
+						this.prepareUsers();
+					}
+				);
 		}
-		this.users = this.userService.getUsers();
 	}
 
-	public submitForm(event: any): void {
-		if(this.userService.isEmailTaken(event.user.email, this.userToEdit?.email)){
+	public async submitForm(event: any): Promise<void> {
+		const isEmailTaken: boolean = await this.userService.isEmailTaken(event.user.email, this.userToEdit?.email);
+		if (isEmailTaken) {
 			this.isEmailTaken = true;
 			return;
-		}		
+		}
 		this.isFormOpen = false;
 		if (event.formType === "Add") {
 			this.addUser(event.user);
 			return;
 		}
 		this.editUser(event.user);
-		
 	}
-	updateIsEmailTaken(event: boolean){
+
+	public updateIsEmailTaken(event: boolean) {
 		this.isEmailTaken = event;
 	}
 }
+
+

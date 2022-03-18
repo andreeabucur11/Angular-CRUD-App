@@ -1,5 +1,7 @@
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { FormControl } from '@angular/forms';
+import { Observable } from 'rxjs';
 import { User } from './user';
 
 @Injectable({
@@ -7,78 +9,72 @@ import { User } from './user';
 })
 export class UserService {
 
-	private users: User[] = [{
-		id: 1,
-		firstName: "Ana",
-		lastName: "Popa",
-		email: "ana.popa@bearingpoint.com",
-		username: "ana.popa"
-	},
-	{
-		id: 2,
-		firstName: "Andreea",
-		lastName: "Bucur",
-		email: "andreea.bucur@bearingpoint.com",
-		username: "andreea.bucur"
-	}];
+	public baseUrl = "http://localhost:3000/user";
 
-	private idCounter: number = 3;
+	constructor(private httpClient: HttpClient) { }
 
-	constructor() { }
-
-	public getUsers(): User[] {
-		const users = [...this.users];
-		return users;
+	public getUsers(): Observable<any> {
+		return this.httpClient.get<any>(this.baseUrl);
 	}
 
-	public addUser(user: User): void {
-		user.id = this.idCounter;
-		this.users.push(user);
-		this.idCounter++;
-		console.log(this.getUsers());
-		
+	public post<T>(
+		relativePath: string,
+		body: unknown,
+		headers?: HttpHeaders
+	): Observable<T> {
+		return this.httpClient.post<T>(relativePath, body, { headers });
 	}
 
-	public findUserById(id: number): User | undefined {
-		return this.getUsers().find(
-			(user: User) => user.id === id
-		);
+	public async addUser(user: User): Promise<User | undefined> {
+		const newUser = await this.post<User>(this.baseUrl, user)
+			.toPromise()
+			.then(
+				(response) => {
+					return response;
+				}
+			)
+			.catch(
+				(error) => {
+					console.log(error);
+					return undefined
+				}
+			);
+		return newUser;
+
 	}
 
-	public editUser(id: number, userFromForm: User): void {
-		const userToEdit: User | undefined = this.findUserById(id);
-		if (!userToEdit) {
-			return;
-		}
-		userToEdit.firstName = userFromForm.firstName;
-		userToEdit.lastName = userFromForm.lastName;
-		userToEdit.email = userFromForm.email;
-		userToEdit.username = userFromForm.email.split('@')[0];
-		
-	}
-
-	public deleteUsers(selectedUsersIds: number[]): void {
-		for (let userId of selectedUsersIds) {
-			this.deleteUser(userId);
+	public async findUserById(id: number): Promise<User> {
+		try {
+			const data = await this.httpClient.get<any>(`${this.baseUrl}/${id}`).toPromise();
+			return data;
+		} catch (error) {
+			throw new Error();
 		}
 	}
 
-	public deleteUser(userId: number): void {
-		const user: User | undefined = this.findUserById(userId);
-		if (user) {
-			this.users.splice(this.getUsers().indexOf(user), 1);
-			console.log(user);
-			
-		}
-		console.log(this.getUsers());
-		
+	public editUser(id: number, userFromForm: User): Observable<any> {
+		return this.httpClient.put(`${this.baseUrl}/${id}`, userFromForm);
 	}
 
-	public isEmailTaken(email: string, currentEmail?: string): boolean {
-		if(email === currentEmail) {
-			return false;
-		}
-		return this.getUsers().some((user: User) => user.email === email);
+	public deleteUser(id: number) {
+		return this.httpClient.delete(`http://localhost:3000/user/${id}`);
+	}
+
+	public async isEmailTaken(email: string, currentEmail?: string): Promise<boolean> {
+		const isEmailTaken = await this.post<any>(`${this.baseUrl}/is-email-taken`, { formEmail: email, currentEmail: currentEmail })
+			.toPromise()
+			.then(
+				(response: boolean) => {
+					return response;
+				}
+			)
+			.catch(
+				(error) => {
+					console.log(error);
+					return false
+				}
+			);
+		return isEmailTaken;
 	}
 
 }
