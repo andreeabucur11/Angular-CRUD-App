@@ -1,6 +1,5 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { FormControl } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { User } from './user';
 
@@ -40,7 +39,6 @@ export class UserService {
 				}
 			);
 		return newUser;
-
 	}
 
 	public async findUserById(id: number): Promise<User> {

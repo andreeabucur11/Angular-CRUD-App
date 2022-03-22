@@ -31,6 +31,11 @@ export class UsersComponent implements OnInit {
 
 	public isEmailTaken: boolean = false;
 
+	public errorMessage: {status: number, statusText:string} = {
+		status: 0,
+		statusText: ''
+	};
+
 	constructor(
 		private userService: UserService
 	) {
@@ -41,6 +46,14 @@ export class UsersComponent implements OnInit {
 		this.userService.getUsers().subscribe(
 			(data) => {
 				this.users = data;
+			},
+			(error) => {
+				this.errorMessage.status = error.status;
+				this.errorMessage.statusText = error.statusText;
+				window.setTimeout(() => {
+					this.errorMessage.status = 0;
+					this.errorMessage.statusText = '';
+				}, 10000)	  				  
 			}
 		)
 	}
@@ -67,7 +80,6 @@ export class UsersComponent implements OnInit {
 			this.userToEdit = undefined;
 		}
 		this.isFormOpen = true;
-
 	}
 
 	public openDeleteSelectedUsersDialog(): void {
@@ -89,6 +101,14 @@ export class UsersComponent implements OnInit {
 						if (user) {
 							this.users.splice(this.users.indexOf(user), 1);
 						}
+					},
+					(error) => {
+						this.errorMessage.status = error.status;
+						this.errorMessage.statusText = error.statusText;
+						window.setTimeout(() => {
+							this.errorMessage.status = 0;
+							this.errorMessage.statusText = '';
+						}, 10000)	 
 					}
 				);
 			this.isOpenConfirmDeleteUserDialog = false;
@@ -101,6 +121,14 @@ export class UsersComponent implements OnInit {
 				.subscribe(
 					() => {
 						this.users.splice(this.users.indexOf(user), 1);
+					},
+					(error) => {
+						this.errorMessage.status = error.status;
+						this.errorMessage.statusText = error.statusText;
+						window.setTimeout(() => {
+							this.errorMessage.status = 0;
+							this.errorMessage.statusText = '';
+						}, 10000)	 
 					}
 				)
 		}
@@ -126,6 +154,14 @@ export class UsersComponent implements OnInit {
 				.subscribe(
 					() => {
 						this.prepareUsers();
+					},
+					(error) => {
+						this.errorMessage.status = error.status;
+						this.errorMessage.statusText = error.statusText;
+						window.setTimeout(() => {
+							this.errorMessage.status = 0;
+							this.errorMessage.statusText = '';
+						}, 10000)	 
 					}
 				);
 		}

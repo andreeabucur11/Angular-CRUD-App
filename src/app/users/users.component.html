@@ -51,3 +51,9 @@
 <app-user-form *ngIf="isFormOpen" [formType]="formType" [userToEdit]="userToEdit" [isEmailTaken]="isEmailTaken"
 	(onClose)="closeForm()" (onSubmit)="submitForm($event)" (onUpdateIsEmailTaken)="updateIsEmailTaken($event)">
 </app-user-form>
+
+<div *ngIf="errorMessage.statusText" class="errorMessage">
+	Status code: {{errorMessage.status}}
+	<br/>
+	Status text: {{errorMessage.statusText}}
+</div>
