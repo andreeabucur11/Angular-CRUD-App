@@ -28,8 +28,7 @@ export class UserService {
 		return this.httpClient.post<User>(this.baseUrl, user);
 	}
 	
-	public editUser(id: number, userFromForm: User): Observable<any> {
-		userFromForm.id = id;
+	public editUser(userFromForm: User): Observable<any> {
 		return this.httpClient.put(`${this.baseUrl}`, userFromForm);
 	}
 

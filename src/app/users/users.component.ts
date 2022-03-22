@@ -145,16 +145,15 @@ export class UsersComponent implements OnInit {
 					this.prepareUsers();
 				},
 				(error) => {
-					console.log(error);
-
+					this.setError(error);
 				}
 			)
 	}
 
 	public editUser(userToEdit: User): void {
 		if (this.userToEdit) {
-			const index = this.users.indexOf(userToEdit);
-			this.userService.editUser(this.userToEdit.id, userToEdit)
+			userToEdit.id = this.userToEdit.id;
+			this.userService.editUser(userToEdit)
 				.subscribe(
 					() => {
 						this.prepareUsers();
