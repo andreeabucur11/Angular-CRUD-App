@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
+import { HttpClientModule } from '@angular/common/http';
 
 import { ButtonModule } from "primeng/button";
 import { DialogModule } from 'primeng/dialog';
@@ -14,17 +15,21 @@ import { TableModule } from 'primeng/table';
 import { UserComponent } from './user/user.component';
 import { RouterModule } from '@angular/router';
 import { UsersComponent } from './users/users.component';
+import { UserFormComponent } from './user-form/user-form.component';
+
 @NgModule({
 	declarations: [
 		AppComponent,
 		UserComponent,
 		UsersComponent,
+		UserFormComponent
 	],
 	imports: [
 		BrowserModule,
 		ButtonModule,
 		ToggleButtonModule,
 		FormsModule,
+		HttpClientModule,
 		BrowserAnimationsModule,
 		DialogModule,
 		CheckboxModule,

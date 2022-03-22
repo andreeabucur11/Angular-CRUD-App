@@ -1,8 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { AbstractControl,  FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { User } from '../user';
 import { UserService } from '../user.service';
-import { EmailValidator } from '../email.validator';
 
 @Component({
 	selector: 'app-users',
@@ -31,31 +29,45 @@ export class UsersComponent implements OnInit {
 
 	public userToDelete: User | undefined;
 
-	public userForm: FormGroup = this.formBuilder.group({
-		firstName: '',
-		lastName: '',
-		email: ''
-	})
+	public isEmailTaken: boolean = false;
+
+	public errorMessage: { status: number, statusText: string } = {
+		status: 0,
+		statusText: ''
+	};
 
 	constructor(
-		private formBuilder: FormBuilder,
 		private userService: UserService
-	) { }
-
-	public get firstNameFormControl(): AbstractControl | null {
-		return this.userForm.get('firstName');
+	) {
+		this.prepareUsers();
 	}
 
-	public get lastNameFormControl(): AbstractControl | null {
-		return this.userForm.get("lastName");
+	public prepareUsers() {
+		this.userService.getUsers().subscribe(
+			(data) => {
+				this.users = data;
+			},
+			(error) => {
+				this.errorMessage.status = error.status;
+				this.errorMessage.statusText = error.statusText;
+				window.setTimeout(() => {
+					this.errorMessage.status = 0;
+					this.errorMessage.statusText = '';
+				}, 10000)
+			}
+		)
 	}
 
-	public get emailFormControl(): AbstractControl | null {
-		return this.userForm.get("email");
+	public setError(error: any): void {
+		this.errorMessage.status = error.status;
+		this.errorMessage.statusText = error.statusText;
+		window.setTimeout(() => {
+			this.errorMessage.status = 0;
+			this.errorMessage.statusText = '';
+		}, 10000)
 	}
 
 	public ngOnInit(): void {
-		this.users = this.userService.users;
 		this.columns = [
 			{ field: 'id', header: 'Id', width: '3%' },
 			{ field: 'firstName', header: 'First name', width: '16%' },
@@ -66,39 +78,16 @@ export class UsersComponent implements OnInit {
 		];
 	}
 
-	public openForm(type: "Add" | "Edit", userId?: number): void {
+	public async openForm(type: "Add" | "Edit", userId?: number): Promise<void> {
+		this.isEmailTaken = false;
 		this.formType = type;
-		this.isFormOpen = true;
-		this.userForm = this.constructForm();
 		if (type == "Edit" && userId) {
-			this.userToEdit = this.userService.findUserById(userId);
-			if (this.userToEdit) {
-				this.populateForm(this.userToEdit);
-			}
-		}	
-	}
-
-	private populateForm(userToEdit: User): void {
-		this.firstNameFormControl?.setValue(userToEdit.firstName);
-		this.lastNameFormControl?.setValue(userToEdit.lastName);
-		this.emailFormControl?.setValue(userToEdit.email);
-		this.emailFormControl?.setValidators([
-			Validators.required,
-			Validators.email,
-			EmailValidator.validateEmail(this.userService, {duplicateEmail: true}, userToEdit.email)
-		])
-	}
-
-	private constructForm(): FormGroup {
-		return this.formBuilder.group({
-			firstName: ["", [Validators.required, Validators.minLength(3)]],
-			lastName: ["", [Validators.required, Validators.minLength(3)]],
-			email: ["", Validators.compose([
-				Validators.required,
-				Validators.email,
-				EmailValidator.validateEmail(this.userService, {duplicateEmail: true})
-			])]
-		});
+			this.userToEdit = await this.userService.findUserById(userId);
+		}
+		else {
+			this.userToEdit = undefined;
+		}
+		this.isFormOpen = true;
 	}
 
 	public openDeleteSelectedUsersDialog(): void {
@@ -110,51 +99,89 @@ export class UsersComponent implements OnInit {
 		this.isOpenConfirmDeleteUserDialog = true;
 	}
 
-	public addUser(): void {
-		if (this.userForm.invalid) {
-			return;
-		}
-		const user: User = this.fromFormToUser();
-		this.userService.addUser(user);
-	}
-
-	public editUser(): void {
-		if (this.userToEdit) {
-			this.userService.editUser(this.userToEdit.id, this.userForm.value);
-			this.userToEdit = undefined;
-		}
-	}
-
-	public deleteUser(): void {
+	public async deleteUser(): Promise<void> {
 		if (this.userToDelete) {
-			this.userService.deleteUser(this.userToDelete.id);
+			const user: User | undefined = await this.userService.findUserById(this.userToDelete!.id);
+			this.selectedUsers = [];
+			this.userService.deleteUser(this.userToDelete.id)
+				.subscribe(
+					() => {
+						if (user) {
+							this.users.splice(this.users.indexOf(user), 1);
+						}
+					},
+					(error) => {
+						this.setError(error);
+					}
+				);
 			this.isOpenConfirmDeleteUserDialog = false;
 		}
 	}
 
 	public deleteUsers(): void {
-		this.userService.deleteUsers(this.selectedUsers.map((user: User) => user.id));
+		for (let user of this.selectedUsers) {
+			this.userService.deleteUser(user.id)
+				.subscribe(
+					() => {
+						this.users.splice(this.users.indexOf(user), 1);
+					},
+					(error) => {
+						this.setError(error);
+					}
+				)
+		}
 		this.selectedUsers = [];
 		this.isOpenConfirmDeleteSelectedUsersDialog = false;
 	}
 
-	public fromFormToUser(): User {
-		const user: User = {
-			id: 0,
-			firstName: this.userForm.value.firstName,
-			lastName: this.userForm.value.lastName,
-			email: this.userForm.value.email,
-			username: this.userForm.value.email.split('@')[0]
-		}
-		return user;
+	public closeForm(): void {
+		this.isFormOpen = false;
 	}
 
-	public submitForm(): void {
-		this.isFormOpen = false;
-		if (this.formType === 'Add') {
-			this.addUser();
+	public async addUser(user: User): Promise<void> {
+		this.userService.addUser(user)
+			.subscribe(
+				() => {
+					this.prepareUsers();
+				},
+				(error) => {
+					this.setError(error);
+				}
+			)
+	}
+
+	public editUser(userToEdit: User): void {
+		if (this.userToEdit) {
+			userToEdit.id = this.userToEdit.id;
+			this.userService.editUser(userToEdit)
+				.subscribe(
+					() => {
+						this.prepareUsers();
+					},
+					(error) => {
+						this.setError(error);
+					}
+				);
+		}
+	}
+
+	public async submitForm(event: any): Promise<void> {
+		const isEmailTaken: boolean = await this.userService.isEmailTaken(event.user.email, this.userToEdit?.email);
+		if (isEmailTaken) {
+			this.isEmailTaken = true;
 			return;
 		}
-		this.editUser();
+		this.isFormOpen = false;
+		if (event.formType === "Add") {
+			this.addUser(event.user);
+			return;
+		}
+		this.editUser(event.user);
+	}
+
+	public updateIsEmailTaken(event: boolean) {
+		this.isEmailTaken = event;
 	}
 }
+
+
