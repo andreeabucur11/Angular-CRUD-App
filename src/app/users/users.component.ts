@@ -31,7 +31,7 @@ export class UsersComponent implements OnInit {
 
 	public isEmailTaken: boolean = false;
 
-	public isLoading = true;
+	public isLoading: boolean = true;
 
 	public errorMessage: { status: number, statusText: string } = {
 		status: 0,
@@ -107,14 +107,17 @@ export class UsersComponent implements OnInit {
 		if (this.userToDelete) {
 			const user: User | undefined = await this.userService.findUserById(this.userToDelete!.id);
 			this.selectedUsers = [];
+			this.isLoading = true;
 			this.userService.deleteUser(this.userToDelete.id)
 				.subscribe(
 					() => {
 						if (user) {
 							this.users.splice(this.users.indexOf(user), 1);
 						}
+						this.isLoading = false;
 					},
 					(error) => {
+						this.isLoading = false;
 						this.setError(error);
 					}
 				);
@@ -123,13 +126,16 @@ export class UsersComponent implements OnInit {
 	}
 
 	public deleteUsers(): void {
+		this.isLoading = true;
 		for (let user of this.selectedUsers) {
 			this.userService.deleteUser(user.id)
 				.subscribe(
 					() => {
 						this.users.splice(this.users.indexOf(user), 1);
+						this.isLoading = false;
 					},
 					(error) => {
+						this.isLoading = false;
 						this.setError(error);
 					}
 				)
@@ -143,6 +149,7 @@ export class UsersComponent implements OnInit {
 	}
 
 	public async addUser(user: User): Promise<void> {
+		this.isLoading = true;
 		this.userService.addUser(user)
 			.subscribe(
 				() => {
@@ -156,13 +163,16 @@ export class UsersComponent implements OnInit {
 
 	public editUser(userToEdit: User): void {
 		if (this.userToEdit) {
+			this.isLoading = true;
 			userToEdit.id = this.userToEdit.id;
 			this.userService.editUser(userToEdit)
 				.subscribe(
 					() => {
 						this.prepareUsers();
+						this.isLoading = false;
 					},
 					(error) => {
+						this.isLoading = false;
 						this.setError(error);
 					}
 				);
