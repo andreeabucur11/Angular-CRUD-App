@@ -29,7 +29,8 @@ export class UserService {
 	}
 	
 	public editUser(id: number, userFromForm: User): Observable<any> {
-		return this.httpClient.put(`${this.baseUrl}/${id}`, userFromForm);
+		userFromForm.id = id;
+		return this.httpClient.put(`${this.baseUrl}`, userFromForm);
 	}
 
 	public async findUserById(id: number): Promise<User> {
