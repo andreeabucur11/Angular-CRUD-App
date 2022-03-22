@@ -24,21 +24,12 @@ export class UserService {
 		return this.httpClient.post<T>(relativePath, body, { headers });
 	}
 
-	public async addUser(user: User): Promise<User | undefined> {
-		const newUser = await this.post<User>(this.baseUrl, user)
-			.toPromise()
-			.then(
-				(response) => {
-					return response;
-				}
-			)
-			.catch(
-				(error) => {
-					console.log(error);
-					return undefined
-				}
-			);
-		return newUser;
+	public  addUser(user: User): Observable<any>  {
+		return this.httpClient.post<User>(this.baseUrl, user);
+	}
+	
+	public editUser(id: number, userFromForm: User): Observable<any> {
+		return this.httpClient.put(`${this.baseUrl}/${id}`, userFromForm);
 	}
 
 	public async findUserById(id: number): Promise<User> {
@@ -50,9 +41,6 @@ export class UserService {
 		}
 	}
 
-	public editUser(id: number, userFromForm: User): Observable<any> {
-		return this.httpClient.put(`${this.baseUrl}/${id}`, userFromForm);
-	}
 
 	public deleteUser(id: number) {
 		return this.httpClient.delete(`http://localhost:3000/user/${id}`);

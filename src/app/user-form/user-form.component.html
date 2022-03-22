@@ -1,5 +1,5 @@
 
-<p-dialog header="{{formType}} user " [(visible)]="isVisible" (onHide)="handleHide()">
+<p-dialog header="{{formType}} user " [(visible)]="isVisible" (onHide)="handleHide()" [modal]="true">
 	<form *ngIf="userForm" [formGroup]="userForm!" (ngSubmit)="handleSubmitForm()">
 		<input type="text" placeholder="First name" id="firstName" formControlName="firstName" />
 		<div class="alert" *ngIf="firstNameFormControl?.invalid && 

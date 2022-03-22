@@ -1,13 +1,13 @@
-<button pButton type="button" label="Add new user" class="p-button-success" (click)="openForm('Add')" [disabled]="isFormOpen"></button>
+<button pButton type="button" label="Add new user" class="p-button-success" (click)="openForm('Add')" ></button>
 
 <button *ngIf="selectedUsers.length" pButton pRipple type="button" label="Delete selected" class="p-button-danger"
-	(click)="openDeleteSelectedUsersDialog()" [disabled]="isFormOpen"></button>
+	(click)="openDeleteSelectedUsersDialog()" ></button>
 
 <p-table [columns]="columns" [value]="users" selectionMode="checkbox" [(selection)]="selectedUsers" >
 	<ng-template pTemplate="header">
 		<tr>
 			<th style="width: 2%">
-				<p-tableHeaderCheckbox [disabled]="isFormOpen"></p-tableHeaderCheckbox>
+				<p-tableHeaderCheckbox ></p-tableHeaderCheckbox>
 			</th>
 			<th *ngFor="let column of columns" [ngStyle]="{'width': column.width}">
 				{{column.header}}
@@ -17,7 +17,7 @@
 	<ng-template pTemplate="body" let-user>
 		<tr>
 			<td>
-				<p-tableCheckbox [value]="user" [disabled]="isFormOpen"></p-tableCheckbox>
+				<p-tableCheckbox [value]="user" ></p-tableCheckbox>
 			</td>
 			<td>{{user.id}}</td>
 			<td>{{user.firstName}}</td>
@@ -26,11 +26,11 @@
 			<td>{{user.email}}</td>
 			<td>
 				<button pButton pRipple type="button" icon="pi pi-user-edit" class="p-button-raised p-button-text"
-					(click)="openForm('Edit', user.id)" [disabled]="isFormOpen"></button>
+					(click)="openForm('Edit', user.id)" ></button>
 				<button pButton pRipple type="button" icon="pi pi-eye" class="p-button-raised p-button-text"
-					[routerLink]="['/user', user.id]" [disabled]="isFormOpen"></button>
+					[routerLink]="['/user', user.id]" ></button>
 				<button pButton pRipple type="button" icon="pi pi-trash" class="p-button-danger"
-					(click)="openDeleteUserDialog(user)" [disabled]="isFormOpen"></button>
+					(click)="openDeleteUserDialog(user)" ></button>
 			</td>
 		</tr>
 	</ng-template>

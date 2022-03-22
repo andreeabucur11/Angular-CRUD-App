@@ -31,7 +31,7 @@ export class UsersComponent implements OnInit {
 
 	public isEmailTaken: boolean = false;
 
-	public errorMessage: {status: number, statusText:string} = {
+	public errorMessage: { status: number, statusText: string } = {
 		status: 0,
 		statusText: ''
 	};
@@ -53,9 +53,18 @@ export class UsersComponent implements OnInit {
 				window.setTimeout(() => {
 					this.errorMessage.status = 0;
 					this.errorMessage.statusText = '';
-				}, 10000)	  				  
+				}, 10000)
 			}
 		)
+	}
+
+	public setError(error: any): void {
+		this.errorMessage.status = error.status;
+		this.errorMessage.statusText = error.statusText;
+		window.setTimeout(() => {
+			this.errorMessage.status = 0;
+			this.errorMessage.statusText = '';
+		}, 10000)
 	}
 
 	public ngOnInit(): void {
@@ -74,7 +83,6 @@ export class UsersComponent implements OnInit {
 		this.formType = type;
 		if (type == "Edit" && userId) {
 			this.userToEdit = await this.userService.findUserById(userId);
-			console.log(this.userToEdit);
 		}
 		else {
 			this.userToEdit = undefined;
@@ -103,12 +111,7 @@ export class UsersComponent implements OnInit {
 						}
 					},
 					(error) => {
-						this.errorMessage.status = error.status;
-						this.errorMessage.statusText = error.statusText;
-						window.setTimeout(() => {
-							this.errorMessage.status = 0;
-							this.errorMessage.statusText = '';
-						}, 10000)	 
+						this.setError(error);
 					}
 				);
 			this.isOpenConfirmDeleteUserDialog = false;
@@ -123,12 +126,7 @@ export class UsersComponent implements OnInit {
 						this.users.splice(this.users.indexOf(user), 1);
 					},
 					(error) => {
-						this.errorMessage.status = error.status;
-						this.errorMessage.statusText = error.statusText;
-						window.setTimeout(() => {
-							this.errorMessage.status = 0;
-							this.errorMessage.statusText = '';
-						}, 10000)	 
+						this.setError(error);
 					}
 				)
 		}
@@ -141,10 +139,16 @@ export class UsersComponent implements OnInit {
 	}
 
 	public async addUser(user: User): Promise<void> {
-		const newUser = await this.userService.addUser(user);
-		if (newUser) {
-			this.users.push(newUser);
-		}
+		this.userService.addUser(user)
+			.subscribe(
+				() => {
+					this.prepareUsers();
+				},
+				(error) => {
+					console.log(error);
+
+				}
+			)
 	}
 
 	public editUser(userToEdit: User): void {
@@ -156,12 +160,7 @@ export class UsersComponent implements OnInit {
 						this.prepareUsers();
 					},
 					(error) => {
-						this.errorMessage.status = error.status;
-						this.errorMessage.statusText = error.statusText;
-						window.setTimeout(() => {
-							this.errorMessage.status = 0;
-							this.errorMessage.statusText = '';
-						}, 10000)	 
+						this.setError(error);
 					}
 				);
 		}

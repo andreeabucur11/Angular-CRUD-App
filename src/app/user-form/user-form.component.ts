@@ -33,7 +33,7 @@ export class UserFormComponent implements OnInit{
 		lastName: ["", [Validators.required, Validators.minLength(3)]],
 		email: ["", [
 			Validators.required,
-			Validators.email,
+			Validators.email
 		]]
 	});
 
@@ -88,10 +88,11 @@ export class UserFormComponent implements OnInit{
 		this.editUser();
 	}
 
-	setIsEmailTakenToFalse(){
+	public setIsEmailTakenToFalse(): void {
 		this.isEmailTaken = false;
 		this.onUpdateIsEmailTaken.emit(false);
 	}
+
 	public fromFormToUser(): User {
 		const user: User = {
 			id: 0,
