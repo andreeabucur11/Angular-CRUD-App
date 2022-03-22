@@ -31,6 +31,8 @@ export class UsersComponent implements OnInit {
 
 	public isEmailTaken: boolean = false;
 
+	public isLoading = true;
+
 	public errorMessage: { status: number, statusText: string } = {
 		status: 0,
 		statusText: ''
@@ -46,10 +48,12 @@ export class UsersComponent implements OnInit {
 		this.userService.getUsers().subscribe(
 			(data) => {
 				this.users = data;
+				this.isLoading = false;
 			},
 			(error) => {
 				this.errorMessage.status = error.status;
 				this.errorMessage.statusText = error.statusText;
+				this.isLoading = false;
 				window.setTimeout(() => {
 					this.errorMessage.status = 0;
 					this.errorMessage.statusText = '';
