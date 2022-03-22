@@ -8,7 +8,7 @@ import{ User} from '../user';
 })
 export class UserComponent implements OnInit {
 
-	public user: User = new User();
+	public user: User = new User({});
 
 	constructor(
 		private readonly activatedRoute: ActivatedRoute,

@@ -4,5 +4,9 @@ export class User{
   public lastName!: string;
   public email!: string;
   public username!: string;
+
+  constructor(user: Partial<User>) {
+    Object.assign(this, user);
+  }
 }
  

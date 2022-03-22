@@ -28,8 +28,8 @@ export class UserService {
 		return this.httpClient.post<User>(this.baseUrl, user);
 	}
 	
-	public editUser(userFromForm: User): Observable<any> {
-		return this.httpClient.put(`${this.baseUrl}`, userFromForm);
+	public editUser(id: number, userFromForm: User): Observable<any> {		
+		return this.httpClient.put(`${this.baseUrl}/${id}`, userFromForm);
 	}
 
 	public async findUserById(id: number): Promise<User> {

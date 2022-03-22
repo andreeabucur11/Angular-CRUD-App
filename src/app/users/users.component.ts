@@ -164,8 +164,7 @@ export class UsersComponent implements OnInit {
 	public editUser(userToEdit: User): void {
 		if (this.userToEdit) {
 			this.isLoading = true;
-			userToEdit.id = this.userToEdit.id;
-			this.userService.editUser(userToEdit)
+			this.userService.editUser(this.userToEdit.id, userToEdit)
 				.subscribe(
 					() => {
 						this.prepareUsers();

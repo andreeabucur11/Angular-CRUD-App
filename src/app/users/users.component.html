@@ -3,7 +3,7 @@
 <button *ngIf="selectedUsers.length" pButton pRipple type="button" label="Delete selected" class="p-button-danger"
 	(click)="openDeleteSelectedUsersDialog()" ></button>
 
-<p-table [columns]="columns" [value]="users" selectionMode="checkbox" [(selection)]="selectedUsers" [loading]="isLoading" >
+<p-table styleClass="p-datatable-striped"[columns]="columns" [value]="users" selectionMode="checkbox" [(selection)]="selectedUsers" [loading]="isLoading" >
 	<ng-template pTemplate="header">
 		<tr>
 			<th style="width: 2%">
