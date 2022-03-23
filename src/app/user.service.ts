@@ -47,7 +47,7 @@ export class UserService {
 	}
 
 	public async isEmailTaken(email: string, currentEmail?: string): Promise<boolean> {
-		const isEmailTaken = await this.post<any>(`${this.baseUrl}/is-email-taken`, { formEmail: email, currentEmail: currentEmail })
+		const isEmailTaken = await this.post<any>(`${this.baseUrl}/check-email-availability`, { formEmail: email, currentEmail: currentEmail })
 			.toPromise()
 			.then(
 				(response: boolean) => {

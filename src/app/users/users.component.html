@@ -34,6 +34,13 @@
 			</td>
 		</tr>
 	</ng-template>
+	<ng-template pTemplate="emptymessage" let-users >
+        <tr>
+            <td [attr.colspan]="users.length">
+                No records found
+            </td>
+        </tr>
+    </ng-template>
 </p-table>
 
 <p-dialog header="Confirm " [(visible)]="isOpenConfirmDeleteSelectedUsersDialog">

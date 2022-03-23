@@ -51,13 +51,8 @@ export class UsersComponent implements OnInit {
 				this.isLoading = false;
 			},
 			(error) => {
-				this.errorMessage.status = error.status;
-				this.errorMessage.statusText = error.statusText;
 				this.isLoading = false;
-				window.setTimeout(() => {
-					this.errorMessage.status = 0;
-					this.errorMessage.statusText = '';
-				}, 10000)
+				this.setError(error);
 			}
 		)
 	}
