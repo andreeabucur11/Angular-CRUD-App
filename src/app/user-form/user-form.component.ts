@@ -6,7 +6,7 @@ import { User } from '../user';
 	templateUrl: './user-form.component.html',
 	styleUrls: ['./user-form.component.css']
 })
-export class UserFormComponent implements OnInit{
+export class UserFormComponent implements OnInit {
 
 	@Input()
 	public formType: "Add" | "Edit" = "Add";
@@ -39,7 +39,7 @@ export class UserFormComponent implements OnInit{
 
 	constructor(
 		private formBuilder: FormBuilder
-	) { 
+	) {
 	}
 
 	public ngOnInit(): void {
@@ -76,7 +76,8 @@ export class UserFormComponent implements OnInit{
 
 	public editUser(): void {
 		if (this.userToEdit) {
-			this.onSubmit.emit({ user: this.userForm?.value, formType: "Edit" })
+			const user = this.fromFormToUser();
+			this.onSubmit.emit({ user: user, formType: "Edit" })
 		}
 	}
 
@@ -94,12 +95,16 @@ export class UserFormComponent implements OnInit{
 	}
 
 	public fromFormToUser(): User {
-		const user: User = {
-			id: 0,
-			firstName: this.userForm?.value.firstName,
-			lastName: this.userForm?.value.lastName,
-			email: this.userForm?.value.email,
-			username: this.userForm?.value.email.split('@')[0]
+		const user: User = new User({});
+		if (this.userForm?.value.firstName !== this.userToEdit?.firstName) {
+			user.firstName = this.userForm?.value.firstName;
+		}
+		if (this.userForm?.value.lastName !== this.userToEdit?.lastName) {
+			user.lastName = this.userForm?.value.lastName;
+		}
+		if (this.userForm?.value.email !== this.userToEdit?.email) {
+			user.email = this.userForm?.value.email;
+			user.username = this.userForm?.value.email.split('@')[0]
 		}
 		return user;
 	}

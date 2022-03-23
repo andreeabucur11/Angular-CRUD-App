@@ -31,6 +31,8 @@ export class UsersComponent implements OnInit {
 
 	public isEmailTaken: boolean = false;
 
+	public isLoading: boolean = true;
+
 	public errorMessage: { status: number, statusText: string } = {
 		status: 0,
 		statusText: ''
@@ -46,14 +48,11 @@ export class UsersComponent implements OnInit {
 		this.userService.getUsers().subscribe(
 			(data) => {
 				this.users = data;
+				this.isLoading = false;
 			},
 			(error) => {
-				this.errorMessage.status = error.status;
-				this.errorMessage.statusText = error.statusText;
-				window.setTimeout(() => {
-					this.errorMessage.status = 0;
-					this.errorMessage.statusText = '';
-				}, 10000)
+				this.isLoading = false;
+				this.setError(error);
 			}
 		)
 	}
@@ -103,14 +102,17 @@ export class UsersComponent implements OnInit {
 		if (this.userToDelete) {
 			const user: User | undefined = await this.userService.findUserById(this.userToDelete!.id);
 			this.selectedUsers = [];
+			this.isLoading = true;
 			this.userService.deleteUser(this.userToDelete.id)
 				.subscribe(
 					() => {
 						if (user) {
 							this.users.splice(this.users.indexOf(user), 1);
 						}
+						this.isLoading = false;
 					},
 					(error) => {
+						this.isLoading = false;
 						this.setError(error);
 					}
 				);
@@ -119,13 +121,16 @@ export class UsersComponent implements OnInit {
 	}
 
 	public deleteUsers(): void {
+		this.isLoading = true;
 		for (let user of this.selectedUsers) {
 			this.userService.deleteUser(user.id)
 				.subscribe(
 					() => {
 						this.users.splice(this.users.indexOf(user), 1);
+						this.isLoading = false;
 					},
 					(error) => {
+						this.isLoading = false;
 						this.setError(error);
 					}
 				)
@@ -139,6 +144,7 @@ export class UsersComponent implements OnInit {
 	}
 
 	public async addUser(user: User): Promise<void> {
+		this.isLoading = true;
 		this.userService.addUser(user)
 			.subscribe(
 				() => {
@@ -152,13 +158,15 @@ export class UsersComponent implements OnInit {
 
 	public editUser(userToEdit: User): void {
 		if (this.userToEdit) {
-			userToEdit.id = this.userToEdit.id;
-			this.userService.editUser(userToEdit)
+			this.isLoading = true;
+			this.userService.editUser(this.userToEdit.id, userToEdit)
 				.subscribe(
 					() => {
 						this.prepareUsers();
+						this.isLoading = false;
 					},
 					(error) => {
+						this.isLoading = false;
 						this.setError(error);
 					}
 				);

@@ -28,8 +28,8 @@ export class UserService {
 		return this.httpClient.post<User>(this.baseUrl, user);
 	}
 	
-	public editUser(userFromForm: User): Observable<any> {
-		return this.httpClient.put(`${this.baseUrl}`, userFromForm);
+	public editUser(id: number, userFromForm: User): Observable<any> {		
+		return this.httpClient.put(`${this.baseUrl}/${id}`, userFromForm);
 	}
 
 	public async findUserById(id: number): Promise<User> {
@@ -47,7 +47,7 @@ export class UserService {
 	}
 
 	public async isEmailTaken(email: string, currentEmail?: string): Promise<boolean> {
-		const isEmailTaken = await this.post<any>(`${this.baseUrl}/is-email-taken`, { formEmail: email, currentEmail: currentEmail })
+		const isEmailTaken = await this.post<any>(`${this.baseUrl}/check-email-availability`, { formEmail: email, currentEmail: currentEmail })
 			.toPromise()
 			.then(
 				(response: boolean) => {
