@@ -7,6 +7,7 @@ import { ButtonModule } from "primeng/button";
 import { DialogModule } from 'primeng/dialog';
 import { ToggleButtonModule } from 'primeng/togglebutton';
 import { CheckboxModule } from 'primeng/checkbox';
+import {DropdownModule} from 'primeng/dropdown';
 
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -35,6 +36,7 @@ import { UserFormComponent } from './user-form/user-form.component';
 		CheckboxModule,
 		ReactiveFormsModule,
 		TableModule,
+		DropdownModule,
 		RouterModule.forRoot([
 			{
 				path: '',
