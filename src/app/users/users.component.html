@@ -3,18 +3,37 @@
 <button *ngIf="selectedUsers.length" pButton pRipple type="button" label="Delete selected" class="p-button-danger"
 	(click)="openDeleteDialog()"></button>
 
-<p-table styleClass="p-datatable-striped" [columns]="columns" [value]="users"
+<p-table #dt1 styleClass="p-datatable-striped" dataKey="id" [columns]="columns" [value]="users" 
+	[globalFilterFields]="['firstName','lastName','email','username']"
 	selectionMode="checkbox" [(selection)]="selectedUsers" [loading]="isLoading" [paginator]="true"
 	[rows]="5" [rowsPerPageOptions]="[5,10,15]" >
+
 	<ng-template pTemplate="header" let-columns>
 		<tr>
 			<th style="width: 2%">
 				<p-tableHeaderCheckbox></p-tableHeaderCheckbox>
 			</th>
-			<th sortable="true" *ngFor="let column of columns" [pSortableColumnDisabled]="column.field =='actions'"
+			<th sortable="true" *ngFor="let column of columns" [pSortableColumnDisabled]="column.field ==='actions'"
 				[ngStyle]="{'width': column.width}" [pSortableColumn]="column.field" >
 				{{column.header}} <p-sortIcon  *ngIf="column.field!='actions'" field="column.field"></p-sortIcon>
 			</th>
+		</tr>
+		<tr>
+			<th></th>
+			<th></th>
+			<th>
+				<p-columnFilter type="text" field="firstName"></p-columnFilter>
+			</th>
+			<th>
+				<p-columnFilter type="text" field="lastName"></p-columnFilter>
+			</th>
+			<th>
+				<p-columnFilter type="text" field="username"></p-columnFilter>
+			</th>
+			<th>
+				<p-columnFilter type="text" field="email"></p-columnFilter>
+			</th>
+			<th></th>
 		</tr>
 	</ng-template>
 	<ng-template pTemplate="body" let-user>
