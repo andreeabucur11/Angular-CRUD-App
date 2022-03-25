@@ -11,15 +11,11 @@ export class UsersComponent implements OnInit {
 
 	public users: User[] = [];
 
-	public openEditForm: boolean = false;
-
 	public userToEdit: User | undefined;
 
 	public selectedUsers: User[] = [];
 
-	public isOpenConfirmDeleteSelectedUsersDialog: boolean = false;
-
-	public isOpenConfirmDeleteUserDialog: boolean = false;
+	public isOpenConfirmDeleteDialog: boolean = false;
 
 	public isFormOpen: boolean = false;
 
@@ -89,13 +85,24 @@ export class UsersComponent implements OnInit {
 		this.isFormOpen = true;
 	}
 
-	public openDeleteSelectedUsersDialog(): void {
-		this.isOpenConfirmDeleteSelectedUsersDialog = true;
+	public openDeleteDialog(user?: User): void {
+		if(user) {
+			this.userToDelete = user;
+		}
+		else {
+			this.userToDelete = undefined;
+		}
+		this.isOpenConfirmDeleteDialog = true;
 	}
 
-	public openDeleteUserDialog(user: User): void {
-		this.userToDelete = user;
-		this.isOpenConfirmDeleteUserDialog = true;
+	public delete(): void {
+		if(this.userToDelete) {
+			this.deleteUser();
+		}
+		else {
+			this.deleteUsers();
+		}
+		this.isOpenConfirmDeleteDialog = false;
 	}
 
 	public async deleteUser(): Promise<void> {
@@ -116,7 +123,6 @@ export class UsersComponent implements OnInit {
 						this.setError(error);
 					}
 				);
-			this.isOpenConfirmDeleteUserDialog = false;
 		}
 	}
 
@@ -136,14 +142,13 @@ export class UsersComponent implements OnInit {
 				)
 		}
 		this.selectedUsers = [];
-		this.isOpenConfirmDeleteSelectedUsersDialog = false;
 	}
 
 	public closeForm(): void {
 		this.isFormOpen = false;
 	}
 
-	public async addUser(user: User): Promise<void> {
+	public  addUser(user: User): void {
 		this.isLoading = true;
 		this.userService.addUser(user)
 			.subscribe(
